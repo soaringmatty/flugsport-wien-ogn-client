@@ -1,0 +1,27 @@
+<nav class="fixed bottom-0 w-full h-20 bg-gray-50 flex justify-around items-center font-medium">
+  <button
+    *ngFor="let tab of tabs"
+    [routerLink]="['/' + tab.route]"
+    class="flex flex-col items-center justify-center"
+    [ngClass]="{
+      'text-blue-800 font-bold': isActive(tab.route),
+      'text-gray-500': !isActive(tab.route)
+    }"
+    (click)="navigate(tab.route)"
+  >
+    <div
+      class="w-16 h-8 flex items-center justify-center rounded-full transition"
+      [ngClass]="{
+        'bg-blue-100': isActive(tab.route)
+      }"
+    >
+      <span class="material-symbols-outlined text-[24px]  transition-colors">
+            <!-- [ngClass]="{ 'font-medium': isActive(tab.route), 'font-light': !isActive(tab.route) }"> -->
+        {{ tab.icon }}
+      </span>
+    </div>
+    <span class="text-xs mt-1 transition-colors block min-w-20 text-center">
+      {{ tab.name }}
+    </span>
+  </button>
+</nav>

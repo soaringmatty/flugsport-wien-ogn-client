@@ -1,0 +1,118 @@
+<div
+    class="w-full bg-white rounded-t-3xl shadow-2xl border-t border-gray-200 p-4 overflow-y-auto text-sm text-gray-800">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <div class="text-lg font-semibold text-gray-900">
+                {{ flight()?.registration }} ({{ flight()?.displayName }})
+            </div>
+            <div class="text-xs text-gray-500">
+                <span class="font-medium">Flarm ID: {{ flight()?.flarmId }}</span>
+                <span> · zuletzt {{ timeAgo() }}</span>
+            </div>
+        </div>
+        <button (click)="close.emit()" class="text-gray-500 hover:text-gray-800">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <ng-container *ngIf="flight() as aircraft">
+        <!-- Typ und Modell -->
+        <div class="mb-3 text-gray-700">
+            <div class="font-medium">
+                {{ getAircraftTypeLabel(aircraft.aircraftType) }}
+                <span class="text-gray-500 font-normal">· {{ aircraft.model }}</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 text-center gap-y-2">
+            <!-- Geschwindigkeit -->
+            <div class="flex flex-col items-center">
+                <span class="material-symbols-outlined text-gray-700 text-lg">speed</span>
+                <span class="font-medium text-sm">{{ aircraft.speed }} km/h</span>
+                <span class="text-xs text-gray-500">Geschwindigkeit</span>
+            </div>
+
+            <!-- Höhe -->
+            <div class="flex flex-col items-center">
+                <span class="material-symbols-outlined text-gray-700 text-lg">altitude</span>
+                <span class="font-medium text-sm">{{ aircraft.heightMSL }} m</span>
+                <span class="text-xs text-gray-500">Höhe (MSL)</span>
+            </div>
+
+            <!-- Vario -->
+            <div class="flex flex-col items-center">
+                <span class="material-symbols-outlined text-gray-700 text-xl">{{varioIcon()}}</span>
+                <span class="font-medium text-sm"
+                    [ngClass]="{ 'text-green-600': aircraft.vario > 0, 'text-red-600': aircraft.vario < 0 }">
+                    {{ aircraft.vario > 0 ? '+' : '' }}{{ aircraft.vario }} m/s
+                </span>
+                <span class="text-xs text-gray-500">Vario</span>
+            </div>
+
+            <!-- Vario 60s -->
+            <div class="flex flex-col items-center">
+                <span class="material-symbols-outlined text-gray-700 text-xl">{{varioAverageIcon()}}</span>
+                <span class="font-medium text-sm"
+                    [ngClass]="{ 'text-green-600': aircraft.varioAverage > 0, 'text-red-600': aircraft.varioAverage < 0 }">
+                    {{ aircraft.varioAverage > 0 ? '+' : '' }}{{ aircraft.varioAverage }} m/s
+                </span>
+                <span class="text-xs text-gray-500">Vario (60s Ø)</span>
+            </div>
+        </div>
+    </ng-container>
+</div>
+
+
+
+<!-- TABELLEN DARSTELLUNG -->
+<!-- <div class="w-full bg-white rounded-t-3xl shadow-2xl border-t border-gray-200 p-4 max-h-[45vh] overflow-y-auto">
+  <div class="flex justify-between items-start mb-3">
+    <div class="text-gray-900">
+      <div class="text-lg font-semibold">
+        {{ flight()?.registration }} ({{ flight()?.displayName }})
+      </div>
+      <div class="text-xs font-medium text-gray-500">Flarm ID: {{ flight()?.flarmId }}</div>
+    </div>
+    <button (click)="close.emit()" class="text-gray-500 hover:text-gray-800">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="flight() as f">
+    <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-800">
+
+      <div class="text-gray-500 font-medium">Typ:</div>
+      <div>{{ getAircraftTypeLabel(f.aircraftType) }}</div>
+
+      <div class="text-gray-500 font-medium">Modell:</div>
+      <div>{{ f.model }}</div>
+
+      <div class="text-gray-500 font-medium">Update:</div>
+      <div>{{ timeAgo() }}</div>
+
+      <div class="text-gray-500 font-medium">Speed:</div>
+      <div>{{ f.speed }} km/h</div>
+
+      <div class="text-gray-500 font-medium">Höhe:</div>
+      <div>{{ f.heightMSL }} m</div>
+
+      <div class="text-gray-500 font-medium">Vario:</div>
+      <div [ngClass]="{
+            'text-green-600': f.vario > 0,
+            'text-red-600': f.vario < 0
+          }">
+        {{ f.vario > 0 ? '+' : '' }}{{ f.vario }} m/s
+      </div>
+
+      <div class="text-gray-500 font-medium">Vario (60s):</div>
+      <div [ngClass]="{
+            'text-green-600': f.varioAverage > 0,
+            'text-red-600': f.varioAverage < 0
+          }">
+        {{ f.varioAverage > 0 ? '+' : '' }}{{ f.varioAverage }} m/s
+      </div>
+
+    </div>
+  </ng-container>
+</div> -->

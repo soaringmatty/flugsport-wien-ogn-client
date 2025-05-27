@@ -1,0 +1,4 @@
+<label class="flex items-center gap-3 cursor-pointer">
+    <input type="checkbox" class="w-5 h-5 accent-blue-600" [checked]="checked()" (change)="onCheckedChange($event)" />
+    <span class="text-base">{{ label() }}</span>
+</label>

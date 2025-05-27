@@ -1,0 +1,10 @@
+<div id="map" class="map w-full h-full touch-manipulation"></div>
+
+@if (selectedFlight()) {
+    <app-flight-info-sheet 
+        class="absolute bottom-20 left-0 right-0"
+        [flight]="selectedFlight()"
+        (close)="unselectGlider()"/>
+}
+
+<!-- [ngClass]="selectedFlight() ? 'animate-slide-in' : 'animate-slide-out'" -->
