@@ -171,6 +171,41 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.mapTileLayer.setSource(source);
   }
 
+  private centerMapIfMarkerIsCovered(flight: Flight): void {
+    const view = this.map.getView();
+    const markerCoord = fromLonLat([flight.longitude, flight.latitude]);
+    const markerPixel = this.map.getPixelFromCoordinate(markerCoord);
+    const mapSize = this.map.getSize();
+    if (!markerPixel || !mapSize) return;
+
+    const [mapWidth, mapHeight] = mapSize;
+
+    // Marker is only centered if it is in the lower 40% of the screen height
+    const verticalThreshold = mapHeight * 0.6;
+
+    const [markerX, markerY] = markerPixel;
+    if (markerY > verticalThreshold) {
+      // Marker is moved to 40% from top
+      const desiredY = mapHeight * 0.4;
+      const deltaY = markerY - desiredY;
+
+      const currentCenterPixel = this.map.getPixelFromCoordinate(view.getCenter()!);
+      const desiredCenterPixel: [number, number] = [
+        markerX,
+        currentCenterPixel[1] + deltaY
+      ];
+
+      const newCenter = this.map.getCoordinateFromPixel(desiredCenterPixel);
+      if (newCenter) {
+        view.animate({
+          center: newCenter,
+          duration: 400,
+          easing: (t) => t * (2 - t) 
+        });
+      }
+    }
+  }
+
   private initializeMap() {
     const storedCenter = sessionStorage.getItem('mapCenter');
     const storedZoom = sessionStorage.getItem('mapZoom');
@@ -261,6 +296,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     this.updateSingleMarkerOnMap(flight);
     this.ognStore.loadFlightHistory(flarmId);
+    this.centerMapIfMarkerIsCovered(flight);
   }
 
   // Removes focus from currently selected glider, clears flight path from map and closes info card and barogram
