@@ -6,6 +6,7 @@ import { MarkerColorScheme } from "./marker-color-scheme";
 export interface MapSettings {
     version: string;
     gliderFilterOnMap: GliderFilter;
+    hideUnregisteredAircraft: boolean;
     hideGlidersOnGround: boolean;
     mapType: MapType
     useFlightPathSmoothing: boolean;

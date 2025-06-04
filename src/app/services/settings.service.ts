@@ -10,6 +10,7 @@ export const defaultSettings: MapSettings = {
   version: config.version,
   gliderFilterOnMap: GliderFilter.allAirplanes,
   hideGlidersOnGround: false,
+  hideUnregisteredAircraft: false,
   mapType: MapType.osm,
   useFlightPathSmoothing: true,
   onlyShowLastFlight: false,

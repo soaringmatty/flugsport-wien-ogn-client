@@ -4,18 +4,19 @@ import { OgnStore } from '../../store/ogn.store';
 import config from '../../../../package.json';
 import { MapType } from '../../models/map-type';
 import { GliderFilter } from '../../models/glider-filter';
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { MarkerColorScheme } from '../../models/marker-color-scheme';
 import { FormsModule } from '@angular/forms';
 import { defaultSettings } from '../../services/settings.service';
+import { ToggleComponent } from "../shared/toggle/toggle.component";
+import { RadioButtonComponent } from "../shared/radio-button/radio-button.component";
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule],
+  imports: [NgIf, NgFor, NgClass, FormsModule, ToggleComponent, RadioButtonComponent, RadioButtonComponent],
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent {
   private readonly store = inject(OgnStore);
@@ -29,9 +30,9 @@ export class SettingsComponent {
 
   // UI Hilfsdaten
   gliderFilters = [
-    { value: GliderFilter.clubAndprivate, label: 'Nur Vereinsflugzeuge' },
+    { value: GliderFilter.allAirplanes, label: 'Alle Luftfahrzeuge' },
     { value: GliderFilter.allGliders, label: 'Alle Segelflugzeuge' },
-    { value: GliderFilter.allAirplanes, label: 'Keine Einschränkung' },
+    { value: GliderFilter.clubAndprivate, label: 'Nur Vereinsflugzeuge' },
     { value: GliderFilter.custom, label: 'Benutzerdefiniert' },
   ];
 
@@ -41,7 +42,7 @@ export class SettingsComponent {
     { value: MarkerColorScheme.aircraftType, label: 'Luftfahrzeugtypen (Glide & Seek)' },
   ];
 
-  customTypes = ['Segelflugzeuge', 'Motorflugzeuge', 'Paragleiter', 'Helikopter', 'Drohnen'];
+  customTypes = ['Segelflug', 'Motorflug', 'Paragleiter', 'Helikopter', 'Drohnen', 'Unbekannt'];
 
   constructor() {
     this.store.loadSettings();
@@ -52,11 +53,7 @@ export class SettingsComponent {
     this.store.saveSettings(this.settings());
   }
 
-  onMapTypeChange(event: Event) {
-    console.log(event)
-    const select = event.target as HTMLSelectElement;
-    const mapType = Number(select.value) as MapType;
-    console.log(mapType);
+  setMapType(mapType: MapType) {
     this.settings.update(prev => ({ ...prev, mapType }));
     this.save();
   }
