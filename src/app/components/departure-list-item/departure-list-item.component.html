@@ -1,0 +1,46 @@
+<div class="py-2">
+    <!-- First row: Registration + Launch Type -->
+    <div class="flex justify-between items-start">
+        <div class="text-sm font-medium text-gray-900">
+            {{ flight()?.registration }} ({{ flight()?.registrationShort }})
+            <div class="text-xs text-gray-500">{{ flight()?.model }}</div>
+        </div>
+
+        <div class="flex items-center gap-1 text-xs text-gray-500">
+            <span class="material-symbols-outlined text-base">{{ getLaunchIcon(flight()?.launchType) }}</span>
+            <span>
+                {{ getLaunchLabel(flight()?.launchType) }}
+                @if (flight()?.launchHeight) {
+                    &bull; {{ flight()?.launchHeight }} m
+                }
+            </span>
+        </div>
+    </div>
+
+    <!-- Second row: Times + Duration -->
+    <div class="flex justify-end items-center text-sm text-gray-700 mt-1 gap-4">
+
+        <!-- Departure -->
+        <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-base text-gray-500">flight_takeoff</span>
+            <span>{{ flight()?.departureTimestamp | date: 'HH:mm' }}</span>
+        </div>
+
+        <!-- Landing or in air -->
+        @if (flight()?.landingTimestamp) {
+        <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-base text-gray-500">flight_land</span>
+            <span>{{ flight()?.landingTimestamp | date: 'HH:mm' }}</span>
+        </div>
+        }
+
+        <!-- Duration -->
+        <div class="flex items-center gap-1"
+            [ngClass]="{'text-green-600': !flight()?.landingTimestamp, 'text-gray-600': flight()?.landingTimestamp }">
+            <span class="material-symbols-outlined text-base">schedule</span>
+            <span>
+                {{ getFlightDuration(flight()?.departureTimestamp, flight()?.landingTimestamp) }}
+            </span>
+        </div>
+    </div>
+</div>

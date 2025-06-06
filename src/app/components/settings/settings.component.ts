@@ -39,7 +39,7 @@ export class SettingsComponent {
   markerColorSchemes = [
     { value: MarkerColorScheme.highlightKnownGliders, label: 'Vereinsflugzeuge hervorheben' },
     { value: MarkerColorScheme.altitude, label: 'Je nach Flughöhe' },
-    { value: MarkerColorScheme.aircraftType, label: 'Luftfahrzeugtypen (Glide & Seek)' },
+    { value: MarkerColorScheme.aircraftType, label: 'Luftfahrzeugtypen' },
   ];
 
   customTypes = ['Segelflug', 'Motorflug', 'Paragleiter', 'Helikopter', 'Drohnen', 'Unbekannt'];

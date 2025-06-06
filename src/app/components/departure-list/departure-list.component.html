@@ -1,1 +1,7 @@
-<p>departure-list works!</p>
+<div class="p-4 space-y-2 bg-gray-50">
+  <div *ngFor="let flight of flights; let last = last">
+    <app-departure-list-item [flight]="flight" />
+    
+    <div *ngIf="!last" class="border-t border-gray-200"></div>
+  </div>
+</div>
