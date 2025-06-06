@@ -1,16 +1,64 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DepartureListItem } from '../../models/departure-list-item.model';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { DepartureListItemComponent } from "../departure-list-item/departure-list-item.component";
+import { OgnStore } from '../../store/ogn.store';
+import { interval, Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-departure-list',
-    imports: [NgIf, NgFor, NgClass, DatePipe, DepartureListItemComponent],
+    imports: [NgFor, DepartureListItemComponent],
     templateUrl: './departure-list.component.html',
-    styleUrl: './departure-list.component.scss'
+    styleUrl: './departure-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
+
 })
-export class DepartureListComponent {
-    flights: DepartureListItem[] = [
+export class DepartureListComponent implements OnInit, OnDestroy {
+    private readonly ognStore = inject(OgnStore);
+    private readonly destroy$ = new Subject<void>();
+
+    departureList = this.ognStore.departureList;
+    //departureList = signal<DepartureListItem[]>([]);
+    expandedItemIndex = signal<number | null>(null);
+    filteredFlarmId = signal<string | null>(null);
+
+    filteredList = computed(() => {
+        return this.filteredFlarmId() ? this.departureList().filter(f => f.flarmId === this.filteredFlarmId()) : this.departureList();
+    });
+
+    isListFiltered = computed(() => {
+        return !!this.filteredFlarmId()
+    })
+
+    ngOnInit(): void {
+        interval(10_000).pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.ognStore.loadDepartureList(false);
+        });
+        this.ognStore.loadDepartureList(false);
+        //this.departureList.set(this.demoList);
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    toggleExpanded(index: number) {
+        this.expandedItemIndex.update(i => (i === index ? null : index));
+    }
+
+    showFlightOnMap(listItem: DepartureListItem): void {
+        // TODO
+    }
+
+    filterForAircraft(flarmId: string | null): void {
+        if (!flarmId) {
+            this.filteredFlarmId.set(null);
+        }
+        this.filteredFlarmId.set(flarmId);
+    }
+
+    demoList: DepartureListItem[] = [
         {
             flarmId: '440524',
             registration: 'OE-9466',

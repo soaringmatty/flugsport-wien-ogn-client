@@ -4,6 +4,7 @@ import { firstValueFrom, map, Observable } from 'rxjs';
 import { Flight } from '../models/flight.model';
 import { api } from '../../environments/api';
 import { HistoryEntry } from '../models/history-entry.model';
+import { DepartureListItem } from '../models/departure-list-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -73,8 +74,9 @@ export class ApiService {
   //   return this.http.get<GliderListItem[]>(url);
   // }
 
-  // getDepartureList(includePrivateGliders: boolean = true): Observable<DepartureListItem[]> {
-  //   const url = api.getDepartureList.replace('{pg}', includePrivateGliders.toString())
-  //   return this.http.get<DepartureListItem[]>(url);
-  // }
+  async getDepartureList(includePrivateGliders: boolean = true): Promise<DepartureListItem[]> {
+    const url = api.getDepartureList.replace('{0}', includePrivateGliders.toString())
+    const request = this.http.get<DepartureListItem[]>(url);
+    return await firstValueFrom(request);
+  }
 }

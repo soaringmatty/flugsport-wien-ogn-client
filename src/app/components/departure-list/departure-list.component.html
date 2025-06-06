@@ -1,7 +1,64 @@
-<div class="p-4 space-y-2 bg-gray-50">
-  <div *ngFor="let flight of flights; let last = last">
-    <app-departure-list-item [flight]="flight" />
-    
-    <div *ngIf="!last" class="border-t border-gray-200"></div>
+@if (departureList().length > 0) {
+<div class="bg-gray-50 min-h-full">
+
+  <!-- 🔼 Neue Top-Leiste -->
+  <div>
+    <div
+      class="flex items-center justify-between bg-white px-4 py-4 mb-4 drop-shadow-sm text-base text-gray-800">
+
+      <!-- 🔹 Anzahl & Filterstatus -->
+      <div class="flex items-center gap-2">
+        <span class="font-medium">
+          {{ filteredList().length }} {{ filteredList().length === 1 ? 'Flug' : 'Flüge' }} erkannt
+        </span>
+        @if (isListFiltered()) {
+        <span class="text-blue-600 font-medium text-xs bg-blue-50 px-2 py-0.5 rounded-full">
+          Gefiltert
+        </span>
+        }
+      </div>
+
+      <!-- ❌ Filter zurücksetzen -->
+      @if (filteredFlarmId()) {
+      <button class="flex items-center gap-1 text-blue-600 font-medium transition"
+        (click)="filteredFlarmId.set(null)">
+        <span class="material-symbols-outlined text-lg">filter_alt_off</span>
+        <span class="text-xs">Filter zurücksetzen</span>
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- 🔽 Flugliste -->
+  <div class="space-y-3 px-4 pb-4">
+    <div *ngFor="let listItem of filteredList(); let i = index">
+      <div class="rounded-2xl shadow-sm bg-white px-4 py-3 transition-all duration-300 cursor-pointer"
+        (click)="toggleExpanded(i)" [class.pb-6]="expandedItemIndex() === i">
+
+        <app-departure-list-item [flight]="listItem" />
+
+        <div class="overflow-hidden transition-all duration-300"
+          [style.maxHeight]="expandedItemIndex() === i ? '100px' : '0px'"
+          [style.marginTop]="expandedItemIndex() === i ? '12px' : '0px'">
+          <div class="border-t border-gray-100 pt-3 flex justify-evenly text-sm text-gray-600">
+            <button class="flex flex-col items-center hover:text-blue-600 transition"
+              (click)="showFlightOnMap(listItem)">
+              <span class="material-symbols-outlined text-[20px]">map</span>
+              <span class="text-xs mt-0.5 font-medium">Flug anzeigen</span>
+            </button>
+            <button class="flex flex-col items-center hover:text-blue-600 transition"
+              (click)="filterForAircraft(listItem.flarmId)">
+              <span class="material-symbols-outlined text-[20px]">filter_alt</span>
+              <span class="text-xs mt-0.5 font-medium">Zeige alle Flüge</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+}
+
+@else () {
+<div class="flex justify-center items-center h-full font-bold text-lg">Heute noch keine Starts</div>
+}

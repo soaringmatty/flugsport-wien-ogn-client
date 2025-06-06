@@ -1,18 +1,18 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DepartureListItem } from '../../models/departure-list-item.model';
 
 @Component({
-  selector: 'app-departure-list-item',
-  imports: [NgClass, DatePipe],
-  templateUrl: './departure-list-item.component.html',
-  styleUrl: './departure-list-item.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-departure-list-item',
+    imports: [NgClass, DatePipe],
+    templateUrl: './departure-list-item.component.html',
+    styleUrl: './departure-list-item.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepartureListItemComponent {
-  flight = input<DepartureListItem>();
+    flight = input<DepartureListItem>();
 
-  
+
 
     formatTimestamp(timestamp?: number): string {
         if (!timestamp) return '';
@@ -48,7 +48,7 @@ export class DepartureListItemComponent {
         }
     }
 
-    getFlightDuration(departure?: number, landing?: number): string {
+    getFlightDurationText(departure?: number, landing?: number): string {
         if (!departure) return '';
         const end = landing ?? Date.now();
         const diff = end - departure;
@@ -59,4 +59,19 @@ export class DepartureListItemComponent {
 
         return `${hours > 0 ? hours + ' h ' : ''}${mins} min`;
     }
+
+    getFlightDurationTime(departure?: number, landing?: number): string {
+        if (!departure) return '';
+        const end = landing ?? Date.now();
+        const diff = end - departure;
+
+        const totalMinutes = Math.floor(diff / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        const pad = (n: number) => n.toString().padStart(2, '0');
+
+        return `${pad(hours)}:${pad(minutes)}`;
+    }
+
 }

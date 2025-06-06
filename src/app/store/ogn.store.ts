@@ -9,6 +9,7 @@ import { GliderFilter } from "../models/glider-filter";
 import { NotificationType } from "../models/notification-type";
 import { messages } from "../constants/messages";
 import { defaultSettings, SettingsService } from "../services/settings.service";
+import { DepartureListItem } from "../models/departure-list-item.model";
 
 
 type OgnState = {
@@ -17,7 +18,7 @@ type OgnState = {
     flightHistory: HistoryEntry[];
     settings: MapSettings;
     //gliderList: GliderListItem[];
-    //departureList: DepartureListItem[];
+    departureList: DepartureListItem[];
 };
 
 const initialState: OgnState = {
@@ -26,7 +27,7 @@ const initialState: OgnState = {
     flightHistory: [],
     settings: defaultSettings,
     //gliderList: [],
-    //departureList: [],
+    departureList: [],
 };
 
 export const OgnStore = signalStore(
@@ -164,14 +165,20 @@ export const OgnStore = signalStore(
             //     });
             //   },
 
-            //   loadDepartureList: (includePrivate: boolean) => {
-            //     api.getDepartureList(includePrivate).subscribe({
-            //       next: list => state.departureList.set(list),
-            //       error: () => {
-            //         notify.notify({ message: messages.defaultNetworkError, type: NotificationType.Error });
-            //       },
-            //     });
-            //   },
+            loadDepartureList: async (knownGlidersOnly: boolean) => {
+                try {
+                    const departureList = await apiService.getDepartureList(knownGlidersOnly);
+                    patchState(state, current => ({
+                        ...current,
+                        departureList
+                    }));
+                } catch (error) {
+                    notificationService.notify({
+                        message: messages.defaultNetworkError,
+                        type: NotificationType.Error
+                    });
+                }
+            },
         };
     })
 );
