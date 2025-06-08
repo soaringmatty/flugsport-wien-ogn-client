@@ -5,11 +5,11 @@ import { MapSettings } from "../models/settings.model";
 import { computed, inject, signal } from "@angular/core";
 import { NotificationService } from "../services/notification.service";
 import { ApiService } from "../services/api.service";
-import { GliderFilter } from "../models/glider-filter";
 import { NotificationType } from "../models/notification-type";
 import { messages } from "../constants/messages";
 import { defaultSettings, SettingsService } from "../services/settings.service";
 import { DepartureListItem } from "../models/departure-list-item.model";
+import { SearchResultItem } from "../models/search-result-item.model";
 
 
 type OgnState = {
@@ -19,6 +19,7 @@ type OgnState = {
     settings: MapSettings;
     //gliderList: GliderListItem[];
     departureList: DepartureListItem[];
+    searchResult: SearchResultItem[];
 };
 
 const initialState: OgnState = {
@@ -28,6 +29,7 @@ const initialState: OgnState = {
     settings: defaultSettings,
     //gliderList: [],
     departureList: [],
+    searchResult: [],
 };
 
 export const OgnStore = signalStore(
@@ -178,6 +180,28 @@ export const OgnStore = signalStore(
                         type: NotificationType.Error
                     });
                 }
+            },
+
+            searchAircraft: async (searchText: string) => {
+                try {
+                    const searchResult = await apiService.searchAircraft(searchText);
+                    patchState(state, current => ({
+                        ...current,
+                        searchResult
+                    }));
+                } catch (error) {
+                    notificationService.notify({
+                        message: messages.defaultNetworkError,
+                        type: NotificationType.Error
+                    });
+                }
+            },
+
+            clearSearchResult: () => {
+                patchState(state, current => ({
+                    ...current,
+                    searchResult: initialState.searchResult
+                }));
             },
         };
     })

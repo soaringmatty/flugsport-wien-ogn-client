@@ -21,7 +21,7 @@ import VectorLayer from 'ol/layer/Vector';
 import TileLayer from 'ol/layer/Tile';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GliderMarkerService } from '../../services/glider-marker.service';
 import { GliderFilter } from '../../models/glider-filter';
 import { coordinates } from '../../constants/coordinates';
@@ -35,7 +35,7 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-map',
-  imports: [FlightInfoSheetComponent],
+  imports: [FlightInfoSheetComponent, RouterLink],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,6 +44,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   // Dependencies (via inject)
   private readonly ognStore = inject(OgnStore);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   //private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly gliderMarkerService = inject(GliderMarkerService);
   //private readonly flightAnalysationService = inject(FlightAnalysationService);
@@ -144,24 +145,40 @@ export class MapComponent implements OnInit, AfterViewInit {
     clearInterval(this.reloadIntervalId);
   }
 
+  openSearchPage(): void {
+    this.router.navigate(['./search'])
+  }
+
   //   toggleBarogram(value: boolean) {
   //     this.showBarogram.set(value);
   //     if (!value) this.mapBarogramSyncService.updateLocationMarkerOnMap();
   //   }
 
-  private loadFlightsWithFilter(settings: MapSettings) {
-    const extent = this.map.getView().calculateExtent(this.map.getSize());
-    const [minLng, minLat, maxLng, maxLat] = transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
-    this.ognStore.loadFlights(
-      maxLat,
-      minLat,
-      maxLng,
-      minLng,
-      this.selectedFlight()?.flarmId,
-      settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
-      settings.gliderFilterOnMap === GliderFilter.club
-    );
-  }
+private loadFlightsWithFilter(settings: MapSettings) {
+  const extent = this.map.getView().calculateExtent(this.map.getSize());
+  // Add 10% padding so that markers don't disappear unexpectedly when coming slightly out of screen
+  const paddingFactor = 0.1;
+  const width = extent[2] - extent[0];
+  const height = extent[3] - extent[1];
+
+  const paddedExtent = [
+    extent[0] - width * paddingFactor,
+    extent[1] - height * paddingFactor,
+    extent[2] + width * paddingFactor,
+    extent[3] + height * paddingFactor, 
+  ];
+
+  const [minLng, minLat, maxLng, maxLat] = transformExtent(paddedExtent, 'EPSG:3857', 'EPSG:4326');
+  this.ognStore.loadFlights(
+    maxLat,
+    minLat,
+    maxLng,
+    minLng,
+    this.selectedFlight()?.flarmId,
+    settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
+    settings.gliderFilterOnMap === GliderFilter.club
+  );
+}
 
   private setMapTilesAccordingToSettings(settings: MapSettings) {
     // const source = settings.mapType === MapType.stamen

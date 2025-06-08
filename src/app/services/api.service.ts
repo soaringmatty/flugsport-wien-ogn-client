@@ -5,6 +5,7 @@ import { Flight } from '../models/flight.model';
 import { api } from '../../environments/api';
 import { HistoryEntry } from '../models/history-entry.model';
 import { DepartureListItem } from '../models/departure-list-item.model';
+import { SearchResultItem } from '../models/search-result-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -77,6 +78,12 @@ export class ApiService {
   async getDepartureList(includePrivateGliders: boolean = true): Promise<DepartureListItem[]> {
     const url = api.getDepartureList.replace('{0}', includePrivateGliders.toString())
     const request = this.http.get<DepartureListItem[]>(url);
+    return await firstValueFrom(request);
+  }
+
+  async searchAircraft(searchText: string): Promise<SearchResultItem[]> {
+    const url = api.searchAircraft.replace('{0}', searchText)
+    const request = this.http.get<SearchResultItem[]>(url);
     return await firstValueFrom(request);
   }
 }
