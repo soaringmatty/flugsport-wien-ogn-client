@@ -19,8 +19,6 @@ import TileSource from 'ol/source/Tile';
 import OSM from 'ol/source/OSM';
 import VectorLayer from 'ol/layer/Vector';
 import TileLayer from 'ol/layer/Tile';
-import Style from 'ol/style/Style';
-import Icon from 'ol/style/Icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GliderMarkerService } from '../../services/glider-marker.service';
 import { GliderFilter } from '../../models/glider-filter';
@@ -32,6 +30,7 @@ import { GliderType } from '../../models/glider-type';
 import { defaults as defaultControls } from 'ol/control';
 import { FlightInfoSheetComponent } from '../flight-info-sheet/flight-info-sheet.component';
 import { NgClass } from '@angular/common';
+import { MapType } from '../../models/map-type';
 
 @Component({
   selector: 'app-map',
@@ -42,10 +41,9 @@ import { NgClass } from '@angular/common';
 })
 export class MapComponent implements OnInit, AfterViewInit {
   // Dependencies (via inject)
-  private readonly ognStore = inject(OgnStore);
+  private readonly store = inject(OgnStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  //private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly gliderMarkerService = inject(GliderMarkerService);
   //private readonly flightAnalysationService = inject(FlightAnalysationService);
   //private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
@@ -53,10 +51,11 @@ export class MapComponent implements OnInit, AfterViewInit {
   // Public properties
   isMobilePortrait = signal(false);
   showBarogram = signal(false);
-  selectedFlight = this.ognStore.selectedFlight as Signal<Flight | undefined>;
-  settings = this.ognStore.settings;
-  flights = this.ognStore.flights;
-  flightHistory = this.ognStore.flightHistory;
+  selectedAircraft = this.store.selectedAircraft;
+  selectedAircraftFlightData = this.store.selectedAircraftFlightData as Signal<Flight | undefined>;
+  settings = this.store.settings;
+  flights = this.store.flights;
+  flightHistory = this.store.flightHistory;
 
   private markerDictionary: Map<string, GliderMarkerProperties> = new Map();
   private reloadIntervalId: any;
@@ -73,11 +72,19 @@ export class MapComponent implements OnInit, AfterViewInit {
   private mapTileLayer!: TileLayer<TileSource>;
 
   constructor() {
-
-    // this.breakpointObserver
-    //     .observe(mobileLayoutBreakpoints)
-    //     .pipe(takeUntilDestroyed())
-    //     .subscribe(result => this.isMobilePortrait.set(result.matches));
+    // When map target is set (e.g. click on a search result item) -> move map to that point
+    effect(() => {
+      const target = this.store.mapTarget();
+      if (target) {
+        const coordinate = fromLonLat([target.lng, target.lat]);
+        this.map.getView().setCenter(coordinate);
+        this.map.getView().setZoom(11);
+        untracked(() => {
+          this.selectGlider(target.flarmId)
+        });
+        this.store.clearMapTarget();
+      }
+    });
 
     // Update marker whenever flights are loaded or settings are updated
     effect(() => {
@@ -91,7 +98,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     effect(() => {
       console.debug('effect - Draw flight path on map if marker is selected or datapoint is added to flight position history');
       const history = this.flightHistory();
-      const selected = this.selectedFlight();
+      const selected = this.selectedAircraftFlightData();
       if (selected && history) this.drawFlightPathFromHistory(history);
     });
 
@@ -126,7 +133,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     //       if (lat && lon) {
     //         const coordinate = fromLonLat([+lon, +lat]);
     //         this.map.getView().setCenter(coordinate);
-    //         this.map.getView().setZoom(13);
+    //         this.map.getView().setZoom(12);
     //       }
     //     });
     // });
@@ -154,31 +161,31 @@ export class MapComponent implements OnInit, AfterViewInit {
   //     if (!value) this.mapBarogramSyncService.updateLocationMarkerOnMap();
   //   }
 
-private loadFlightsWithFilter(settings: MapSettings) {
-  const extent = this.map.getView().calculateExtent(this.map.getSize());
-  // Add 10% padding so that markers don't disappear unexpectedly when coming slightly out of screen
-  const paddingFactor = 0.1;
-  const width = extent[2] - extent[0];
-  const height = extent[3] - extent[1];
+  private loadFlightsWithFilter(settings: MapSettings) {
+    const extent = this.map.getView().calculateExtent(this.map.getSize());
+    // Add 10% padding so that markers don't disappear unexpectedly when coming slightly out of screen
+    const paddingFactor = 0.1;
+    const width = extent[2] - extent[0];
+    const height = extent[3] - extent[1];
 
-  const paddedExtent = [
-    extent[0] - width * paddingFactor,
-    extent[1] - height * paddingFactor,
-    extent[2] + width * paddingFactor,
-    extent[3] + height * paddingFactor, 
-  ];
+    const paddedExtent = [
+      extent[0] - width * paddingFactor,
+      extent[1] - height * paddingFactor,
+      extent[2] + width * paddingFactor,
+      extent[3] + height * paddingFactor,
+    ];
 
-  const [minLng, minLat, maxLng, maxLat] = transformExtent(paddedExtent, 'EPSG:3857', 'EPSG:4326');
-  this.ognStore.loadFlights(
-    maxLat,
-    minLat,
-    maxLng,
-    minLng,
-    this.selectedFlight()?.flarmId,
-    settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
-    settings.gliderFilterOnMap === GliderFilter.club
-  );
-}
+    const [minLng, minLat, maxLng, maxLat] = transformExtent(paddedExtent, 'EPSG:3857', 'EPSG:4326');
+    this.store.loadFlights(
+      maxLat,
+      minLat,
+      maxLng,
+      minLng,
+      this.selectedAircraft() as string,
+      settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
+      settings.gliderFilterOnMap === GliderFilter.clubAndprivate
+    );
+  }
 
   private setMapTilesAccordingToSettings(settings: MapSettings) {
     // const source = settings.mapType === MapType.stamen
@@ -217,7 +224,7 @@ private loadFlightsWithFilter(settings: MapSettings) {
         view.animate({
           center: newCenter,
           duration: 400,
-          easing: (t) => t * (2 - t) 
+          easing: (t) => t * (2 - t)
         });
       }
     }
@@ -297,33 +304,35 @@ private loadFlightsWithFilter(settings: MapSettings) {
   // Puts a specific glider on the map in focus
   // -> Updates selected flight in store (which causes the info card to open), updates marker style to selected, loads flight path to show on map
   private selectGlider(flarmId: string): void {
-    if (this.selectedFlight()?.flarmId === flarmId) {
+    if (this.selectedAircraft() === flarmId || !flarmId) {
       return;
     }
-    const previousSelectedFlight = this.selectedFlight();
-    const flight = this.flights().find((x) => x.flarmId === flarmId);
-    if (!flight) {
-      console.warn(`Failed to select marker with flarmId ${flarmId} since it does not exist in list of flights`);
-      return;
+    const previousSelectedFlightData = this.selectedAircraftFlightData();
+    this.store.selectAircraft(flarmId);
+    const flightData = this.flights().find((x) => x.flarmId === flarmId);
+    if (flightData) {
+      this.store.setSelectedAircraftFlightData(flightData);
+      if (previousSelectedFlightData) {
+        // Update previous selected marker style to unselected
+        this.updateSingleMarkerOnMap(previousSelectedFlightData);
+      }
+      this.updateSingleMarkerOnMap(flightData);
+      this.store.loadFlightHistory(flarmId);
+      this.centerMapIfMarkerIsCovered(flightData);
     }
-    this.ognStore.selectFlight(flight);
-    if (previousSelectedFlight) {
-      // Update previous selected marker style to unselected
-      this.updateSingleMarkerOnMap(previousSelectedFlight);
+    else {
+      this.loadFlightsWithFilter(this.settings())
     }
-    this.updateSingleMarkerOnMap(flight);
-    this.ognStore.loadFlightHistory(flarmId);
-    this.centerMapIfMarkerIsCovered(flight);
   }
 
   // Removes focus from currently selected glider, clears flight path from map and closes info card and barogram
   unselectGlider(): void {
-    if (!this.selectedFlight()) {
+    if (!this.selectedAircraftFlightData()) {
       return;
     }
     this.showBarogram.set(false);
-    this.ognStore.selectFlight(null);
-    this.updateSingleMarkerOnMap(this.selectedFlight() as Flight)
+    this.store.selectAircraft(null);
+    this.updateSingleMarkerOnMap(this.selectedAircraftFlightData() as Flight)
     this.flightPathStrokeLayer.getSource()?.clear();
     this.flightPathLayer.getSource()?.clear();
     this.flightPathMarkerLayer.getSource()?.clear();
@@ -425,7 +434,7 @@ private loadFlightsWithFilter(settings: MapSettings) {
     const source = layer.getSource();
     const existingFeature = source?.getFeatureById(flight.flarmId);
 
-    const iconStyle = await this.gliderMarkerService.getGliderMarkerStyle(flight, this.settings(), this.selectedFlight()?.flarmId === flight.flarmId);
+    const iconStyle = await this.gliderMarkerService.getGliderMarkerStyle(flight, this.settings(), this.selectedAircraftFlightData()?.flarmId === flight.flarmId);
 
     if (existingFeature) {
       existingFeature.setGeometry(new Point(fromLonLat([flight.longitude, flight.latitude])));
@@ -439,9 +448,10 @@ private loadFlightsWithFilter(settings: MapSettings) {
       source?.addFeature(feature);
     }
 
+    const isSelected = this.selectedAircraftFlightData()?.flarmId === flight.flarmId;
     this.markerDictionary.set(flight.flarmId, {
-      isSelected: this.selectedFlight()?.flarmId === flight.flarmId,
-      opacity: this.gliderMarkerService.getMarkerOpacity(flight.timestamp),
+      isSelected,
+      opacity: this.gliderMarkerService.getMarkerOpacity(flight.timestamp, isSelected),
       altitudeLayer: Math.floor(flight.heightMSL / 250)
     });
   }

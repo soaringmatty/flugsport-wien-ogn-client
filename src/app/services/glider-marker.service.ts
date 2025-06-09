@@ -45,9 +45,9 @@ export class GliderMarkerService {
     });
   }
 
-  getMarkerOpacity(lastUpdateTimestamp: number): number {
+  getMarkerOpacity(lastUpdateTimestamp: number, isSelected: boolean): number {
     const minutes = (Date.now() - lastUpdateTimestamp) / 60000;
-    if (minutes > 20) return 0.4;
+    if (minutes > 20 && !isSelected) return 0.4;
     if (minutes > 10) return 0.6;
     if (minutes > 3) return 0.8;
     return 1;
@@ -123,7 +123,7 @@ export class GliderMarkerService {
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) throw new Error('Canvas context not available');
 
-    const opacity = this.getMarkerOpacity(lastUpdateTimestamp);
+    const opacity = this.getMarkerOpacity(lastUpdateTimestamp, isSelected);
     canvas.width = image.width;
     canvas.height = image.height;
 

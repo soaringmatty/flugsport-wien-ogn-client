@@ -11,9 +11,9 @@
 </div>
 
 
-@if (selectedFlight()) {
+@if (selectedAircraftFlightData()) {
     <app-flight-info-sheet 
         class="absolute bottom-20 left-0 right-0"
-        [flight]="selectedFlight()"
+        [flight]="selectedAircraftFlightData()"
         (close)="unselectGlider()"/>
 }

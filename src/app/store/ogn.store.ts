@@ -10,26 +10,31 @@ import { messages } from "../constants/messages";
 import { defaultSettings, SettingsService } from "../services/settings.service";
 import { DepartureListItem } from "../models/departure-list-item.model";
 import { SearchResultItem } from "../models/search-result-item.model";
+import { MapTarget } from "../models/map-target.model";
 
 
 type OgnState = {
     flights: Flight[];
-    selectedFlight: Flight | null;
+    selectedAircraft: string | null;
+    selectedAircraftFlightData: Flight | null;
     flightHistory: HistoryEntry[];
     settings: MapSettings;
     //gliderList: GliderListItem[];
     departureList: DepartureListItem[];
     searchResult: SearchResultItem[];
+    mapTarget: MapTarget | null;
 };
 
 const initialState: OgnState = {
     flights: [],
-    selectedFlight: null,
+    selectedAircraft: null,
+    selectedAircraftFlightData: null,
     flightHistory: [],
     settings: defaultSettings,
     //gliderList: [],
     departureList: [],
     searchResult: [],
+    mapTarget: null,
 };
 
 export const OgnStore = signalStore(
@@ -79,8 +84,8 @@ export const OgnStore = signalStore(
                         selectedFlarmId, glidersOnly, clubGlidersOnly
                     );
 
-                    const selected = state.selectedFlight();
-                    const updatedSeletedFlight = flights.find(f => f.flarmId === selected?.flarmId);
+                    const selected = state.selectedAircraftFlightData();
+                    const updatedSeletedFlight = flights.find(f => f.flarmId === selectedFlarmId);
                     const hasChanged = updatedSeletedFlight && updatedSeletedFlight.timestamp !== selected?.timestamp;
 
                     const flightHistory = state.flightHistory();
@@ -99,7 +104,7 @@ export const OgnStore = signalStore(
                     patchState(state, current => ({
                         ...current,
                         flights,
-                        selectedFlight: updatedSeletedFlight || current.selectedFlight,
+                        selectedAircraftFlightData: updatedSeletedFlight || current.selectedAircraftFlightData,
                         flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory
                     }));
                 } catch (error) {
@@ -126,18 +131,28 @@ export const OgnStore = signalStore(
                 }
             },
 
-            selectFlight: (flight: Flight | null) => {
-                if (flight) {
+            selectAircraft: (flarmId: string | null) => {
+                if (flarmId) {
                     patchState(state, current => ({
                         ...current,
-                        selectedFlight: flight,
+                        selectedAircraft: flarmId,
                     }));
                 }
                 else {
                     patchState(state, current => ({
                         ...current,
-                        selectedFlight: initialState.selectedFlight,
+                        selectedAircraft: initialState.selectedAircraft,
+                        selectedAircraftFlightData: initialState.selectedAircraftFlightData,
                         flightHistory: initialState.flightHistory
+                    }));
+                }
+            },
+
+            setSelectedAircraftFlightData: (flightData: Flight | null) => {
+                if (flightData) {
+                    patchState(state, current => ({
+                        ...current,
+                        selectedAircraftFlightData: flightData,
                     }));
                 }
             },
@@ -203,6 +218,20 @@ export const OgnStore = signalStore(
                     searchResult: initialState.searchResult
                 }));
             },
+
+            setMapTarget(flarmId: string, lat: number, lng: number): void {
+                patchState(state, current => ({
+                    ...current,
+                    mapTarget: { flarmId, lat, lng }
+                }));
+            },
+
+            clearMapTarget(): void {
+                patchState(state, current => ({
+                    ...current,
+                    mapTarget: initialState.mapTarget
+                }));
+            }
         };
     })
 );

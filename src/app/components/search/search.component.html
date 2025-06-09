@@ -11,9 +11,9 @@
   </div>
 
   <!-- Results -->
-  <div class="overflow-y-auto px-4 pb-4 space-y-3 flex-1">
+  <div class="overflow-y-auto overscroll-auto px-4 pb-4 space-y-3 flex-1">
     <div *ngFor="let result of searchResults().slice(0, 20)"
-      class="rounded-2xl shadow-sm bg-white px-4 py-3 cursor-pointer">
+      class="rounded-2xl shadow-sm bg-white px-4 py-3 cursor-pointer" (click)="showAircraftOnMap(result)">
       <div class="flex justify-between items-start gap-4">
         <!-- LEFT: Info -->
         <div class="flex flex-col text-sm font-medium text-gray-900 leading-tight flex-1">

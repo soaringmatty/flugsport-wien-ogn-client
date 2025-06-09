@@ -41,7 +41,8 @@ export class SearchComponent implements AfterViewInit, OnDestroy {
   }
 
   showAircraftOnMap(item: SearchResultItem): void {
-    // TODO
+    this.store.setMapTarget(item.flarmId, item.latitude, item.longitude);
+    this.router.navigate(['/map']);
   }
 
   getTimeAgoString(timestamp: number): string {
@@ -63,7 +64,7 @@ export class SearchComponent implements AfterViewInit, OnDestroy {
     return 'gerade eben';
   }
 
-  
+
 
   private restartSearchTimer(): void {
     this.stopSearchTimer();
