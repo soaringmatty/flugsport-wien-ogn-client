@@ -82,8 +82,9 @@ export class ApiService {
   }
 
   async searchAircraft(searchText: string): Promise<SearchResultItem[]> {
-    const url = api.searchAircraft.replace('{0}', searchText)
-    const request = this.http.get<SearchResultItem[]>(url);
+    const url = api.searchAircraft.replace('{0}', searchText);
+    const params = new HttpParams().append('take', 21); // 21 so that we know if there are more elements because UI only renders 20
+    const request = this.http.get<SearchResultItem[]>(url, {params});
     return await firstValueFrom(request);
   }
 }

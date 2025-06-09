@@ -1,3 +1,5 @@
+import { LaunchType } from "./launch-type";
+
 export interface DepartureListItem {
   flarmId: string;
   registration: string;
@@ -5,6 +7,6 @@ export interface DepartureListItem {
   model: string;
   departureTimestamp?: number;
   landingTimestamp?: number;
-  launchType: 'winch' | 'aerotow' | 'motorized' | 'unknown';
+  launchType: LaunchType;
   launchHeight?: number;
 }

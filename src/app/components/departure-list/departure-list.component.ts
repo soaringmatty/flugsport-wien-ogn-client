@@ -4,6 +4,7 @@ import { NgFor } from '@angular/common';
 import { DepartureListItemComponent } from "../departure-list-item/departure-list-item.component";
 import { OgnStore } from '../../store/ogn.store';
 import { interval, Subject, takeUntil } from 'rxjs';
+import { LaunchType } from '../../models/launch-type';
 
 @Component({
     selector: 'app-departure-list',
@@ -66,7 +67,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'Dimona HK 36 TTC',
             departureTimestamp: 1749136500000,
             landingTimestamp: 1749138600000,
-            launchType: 'motorized',
+            launchType: LaunchType.motorized,
         },
         {
             flarmId: 'DD9EA3',
@@ -74,7 +75,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             registrationShort: 'DL',
             model: 'LS4',
             departureTimestamp: 1749135600000,
-            launchType: 'unknown',
+            launchType: LaunchType.unknown,
         },
         {
             flarmId: 'DDAD0C',
@@ -83,7 +84,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'ASK 21',
             departureTimestamp: 1749134400000,
             landingTimestamp: 1749136200000,
-            launchType: 'winch',
+            launchType: LaunchType.winch,
             launchHeight: 530,
         },
         {
@@ -93,7 +94,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'Katana DA 20 A1',
             departureTimestamp: 1749133200000,
             landingTimestamp: 1749135300000,
-            launchType: 'motorized',
+            launchType: LaunchType.motorized,
         },
         {
             flarmId: 'DD98B4',
@@ -102,7 +103,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'Ventus 2b',
             departureTimestamp: 1749132000000,
             landingTimestamp: 1749134400000,
-            launchType: 'aerotow',
+            launchType: LaunchType.aerotow,
             launchHeight: 600,
         },
         {
@@ -112,7 +113,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'ASK 21',
             departureTimestamp: 1749131400000,
             landingTimestamp: 1749132900000,
-            launchType: 'aerotow',
+            launchType: LaunchType.aerotow,
             launchHeight: 400,
         },
         {
@@ -122,7 +123,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'Dimona HK 36 TTC',
             departureTimestamp: 1749130800000,
             landingTimestamp: 1749132600000,
-            launchType: 'motorized',
+            launchType: LaunchType.motorized,
         },
         {
             flarmId: 'DD98B4',
@@ -130,7 +131,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             registrationShort: 'DR',
             model: 'Ventus 2b',
             departureTimestamp: 1749130200000,
-            launchType: 'winch',
+            launchType: LaunchType.winch,
             launchHeight: 510,
         },
         {
@@ -139,7 +140,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             registrationShort: 'DL',
             model: 'LS4',
             departureTimestamp: 1749129600000,
-            launchType: 'winch',
+            launchType: LaunchType.winch,
             launchHeight: 470,
         },
         {
@@ -149,7 +150,7 @@ export class DepartureListComponent implements OnInit, OnDestroy {
             model: 'ASK 21',
             departureTimestamp: 1749128400000,
             landingTimestamp: 1749129900000,
-            launchType: 'aerotow',
+            launchType: LaunchType.aerotow,
             launchHeight: 300,
         }
     ];

@@ -9,6 +9,7 @@ export interface SearchResultItem {
   //aircraftType: AircraftType;
   latitude: number;
   longitude: number;
+  altitude: number;
   timestamp: number;
   flightStatus: FlightStatus;
   priority: number;

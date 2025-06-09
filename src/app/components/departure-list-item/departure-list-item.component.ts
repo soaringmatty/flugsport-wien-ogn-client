@@ -1,6 +1,7 @@
 import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DepartureListItem } from '../../models/departure-list-item.model';
+import { LaunchType } from '../../models/launch-type';
 
 @Component({
     selector: 'app-departure-list-item',
@@ -20,29 +21,29 @@ export class DepartureListItemComponent {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    getLaunchLabel(type?: string): string {
+    getLaunchLabel(type?: LaunchType): string {
         switch (type) {
-            case 'winch':
+            case LaunchType.winch:
                 return 'Winde';
-            case 'aerotow':
+            case LaunchType.aerotow:
                 return 'F-Schlepp';
-            case 'motorized':
+            case LaunchType.motorized:
                 return 'Eigenstart';
-            case 'unknown':
+            case LaunchType.unknown:
             default:
                 return 'Unbekannt';
         }
     }
 
-    getLaunchIcon(type?: string): string {
+    getLaunchIcon(type?: LaunchType): string {
         switch (type) {
-            case 'winch':
+            case LaunchType.winch:
                 return 'delivery_truck_bolt';
-            case 'aerotow':
+            case LaunchType.aerotow:
                 return 'connecting_airports';
-            case 'motorized':
+            case LaunchType.motorized:
                 return 'travel';
-            case 'unknown':
+            case LaunchType.unknown:
             default:
                 return 'help_outline';
         }

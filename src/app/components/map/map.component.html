@@ -1,15 +1,15 @@
 <div id="map" class="map w-full h-full touch-manipulation"></div>
 
-<!-- Search bar -->
-<div class="fixed top-4 left-4 right-4 z-30">
+<!-- Search Icon Button -->
+<div class="fixed top-4 left-4 z-30">
   <a
     [routerLink]="['/search']"
-    class="w-full px-4 py-2 rounded-full bg-white shadow-md text-sm text-gray-700 flex items-center gap-2"
+    class="p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition flex items-center justify-center"
   >
-    <span class="material-symbols-outlined text-gray-500 text-xl">search</span>
-    <span class="text-gray-500 text-base">Flugzeug suchen</span>
+    <span class="material-symbols-outlined text-gray-700 text-[24px] leading-none">search</span>
   </a>
 </div>
+
 
 @if (selectedFlight()) {
     <app-flight-info-sheet 

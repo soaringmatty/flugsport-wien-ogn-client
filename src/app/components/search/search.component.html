@@ -2,28 +2,19 @@
 
   <!-- Sticky Searchbar -->
   <div class="sticky top-0 z-10 bg-gray-50 p-4 pb-2">
-    <div
-      class="w-full px-4 py-2 rounded-full bg-white shadow-md text-sm text-gray-700 flex items-center gap-2">
+    <div class="w-full px-4 py-2 rounded-full bg-white shadow-md text-sm text-gray-700 flex items-center gap-2">
       <span class="material-symbols-outlined text-gray-500 text-xl" (click)="router.navigate(['/'])">arrow_back</span>
-      <input
-        #searchInput
-        type="text"
-        placeholder="Suchen"
-        class="flex-1 text-base text-gray-800 bg-transparent focus:outline-none"
-        (input)="searchAircraft($event)"
-        autofocus
-      />
+      <input #searchInput type="text" placeholder="Suchen"
+        class="flex-1 text-base text-gray-800 bg-transparent focus:outline-none" (input)="searchAircraft($event)"
+        autofocus />
     </div>
   </div>
 
   <!-- Results -->
   <div class="overflow-y-auto px-4 pb-4 space-y-3 flex-1">
-    <div
-      *ngFor="let result of searchResults().slice(0, 10)"
-      class="rounded-2xl shadow-sm bg-white px-4 py-3 cursor-pointer"
-    >
-      <div class="flex justify-between items-center gap-4">
-
+    <div *ngFor="let result of searchResults().slice(0, 20)"
+      class="rounded-2xl shadow-sm bg-white px-4 py-3 cursor-pointer">
+      <div class="flex justify-between items-start gap-4">
         <!-- LEFT: Info -->
         <div class="flex flex-col text-sm font-medium text-gray-900 leading-tight flex-1">
           <div class="flex items-center gap-2 flex-wrap">
@@ -32,39 +23,54 @@
             </div>
 
             <!-- Status Chip -->
-            <span
-              class="font-medium text-xs px-2 py-0.5 rounded-full"
-              [ngClass]="{
-                'bg-gray-100 text-gray-500': result.flightStatus === 0,
-                'bg-blue-50 text-blue-600': result.flightStatus === 1,
-                'bg-green-50 text-green-600': result.flightStatus === 2,
-                'bg-yellow-50 text-yellow-600': result.flightStatus === 3
-              }"
-            >
+            <span class="font-semibold text-sm px-2 py-0.5 rounded-full" [ngClass]="{
+              'bg-gray-100 text-gray-500': result.flightStatus === 0,
+              'bg-blue-50 text-blue-600': result.flightStatus === 1,
+              'bg-green-50 text-green-600': result.flightStatus === 2,
+              'bg-yellow-50 text-yellow-600': result.flightStatus === 3
+            }">
               {{
-                result.flightStatus === 0 ? 'Kein Signal' :
-                result.flightStatus === 1 ? 'Am Boden' :
-                result.flightStatus === 2 ? 'In der Luft' :
-                'Signal verloren'
+              result.flightStatus === 0 ? 'Kein Signal' :
+              result.flightStatus === 1 ? 'Am Boden' :
+              result.flightStatus === 2 ? 'In der Luft' :
+              'Signal verloren'
               }}
             </span>
           </div>
+
+          <!-- Model -->
           <div class="text-xs text-gray-500 mt-0.5">
             {{ result.model }}
           </div>
+
+          <!-- Last Seen Info -->
+          @if (result.timestamp > 0) {
+          <div class="text-xs font-normal text-gray-500 mt-0.5">
+            zuletzt {{ getTimeAgoString(result.timestamp) }}
+          </div>
+          }
         </div>
+
+        <!-- RIGHT: Altitude -->
+        @if (result.flightStatus > 1) {
+        <div class="flex flex-col items-center text-sm text-gray-700">
+          <span class="material-symbols-outlined text-[18px] text-gray-700">altitude</span>
+          <span class="font-medium text-sm">{{ result.altitude }} m</span>
+          <span class="text-xs text-gray-500">Höhe (MSL)</span>
+        </div>
+        }
       </div>
+
     </div>
 
     @if (searchResults().length === 0) {
     <div class="flex justify-center items-center h-full font-semibold text-lg">Keine Suchergebnisse</div>
     }
 
-    <!-- Hint for >10 results -->
-    @if (searchResults().length > 10) {
-      <div class="text-xs text-center text-gray-500 mt-2">
-        Nur die ersten 10 Ergebnisse werden angezeigt. Bitte schränke deine Suche weiter ein.
-      </div>
+    @if (searchResults().length > 20) {
+    <div class="text-xs text-center text-gray-500 mt-2">
+      Nur die ersten 20 Ergebnisse werden angezeigt. Bitte schränke deine Suche weiter ein.
+    </div>
     }
   </div>
 </div>
