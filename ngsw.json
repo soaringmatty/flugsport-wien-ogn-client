@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1749462862639,
+  "timestamp": 1749464733536,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -12,7 +12,7 @@
       },
       "urls": [
         "/index.html",
-        "/main-6QYJ57SZ.js",
+        "/main-GT656IYC.js",
         "/polyfills-FFHMD2TL.js",
         "/styles-SIUKJGO4.css"
       ],
@@ -94,8 +94,8 @@
     "/assets/pwa/screenshot-portrait.png": "f7e89debbacf9a9618d8cdc45e71be5040117454",
     "/assets/pwa/web-app-manifest-192x192.png": "063b4e4cb22b5fded8755e4dc42320ce362e31de",
     "/assets/pwa/web-app-manifest-512x512.png": "9e19a2e79558ab5516c18441a51b0485ee6a888e",
-    "/index.html": "ca95fcc05573d26342fcbe2c81f78c20d161b141",
-    "/main-6QYJ57SZ.js": "d560a231d49bccc8e543a62983bc65578def3713",
+    "/index.html": "fb172b4c32acf288587ed6eefc8a2b038e932d22",
+    "/main-GT656IYC.js": "aecd4417aa7fbcdda5c71e8fc5666b71c4c29d2f",
     "/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/styles-SIUKJGO4.css": "6ed566b40a44aa688ba659edcd04446602745caa"
   },
