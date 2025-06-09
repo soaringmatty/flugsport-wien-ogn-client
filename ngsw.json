@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1749417857436,
+  "timestamp": 1749460410109,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -12,9 +12,9 @@
       },
       "urls": [
         "/index.html",
-        "/main-2O7VA5IW.js",
+        "/main-OOGJTH6J.js",
         "/polyfills-FFHMD2TL.js",
-        "/styles-6TZ2LPZJ.css"
+        "/styles-H75D2EDF.css"
       ],
       "patterns": []
     },
@@ -94,10 +94,10 @@
     "/assets/pwa/screenshot-portrait.png": "f7e89debbacf9a9618d8cdc45e71be5040117454",
     "/assets/pwa/web-app-manifest-192x192.png": "063b4e4cb22b5fded8755e4dc42320ce362e31de",
     "/assets/pwa/web-app-manifest-512x512.png": "9e19a2e79558ab5516c18441a51b0485ee6a888e",
-    "/index.html": "396222c803344a6a4387d2dae3bb3ba73551b826",
-    "/main-2O7VA5IW.js": "c0fb806da6163006db6a4985d995e71421087a1c",
+    "/index.html": "d3700712dc1e551a39e2667a23e8959fd4e0c495",
+    "/main-OOGJTH6J.js": "508e9b698ed93505bb11f7b8d588fc53c0004969",
     "/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
-    "/styles-6TZ2LPZJ.css": "eba4f10519e8c312b87240a3060c6fa63e69662b"
+    "/styles-H75D2EDF.css": "4855060e50e65f963018c308f7cc8b79df68bfa1"
   },
   "navigationUrls": [
     {
