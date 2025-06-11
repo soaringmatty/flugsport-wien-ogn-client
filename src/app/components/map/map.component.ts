@@ -31,10 +31,12 @@ import { defaults as defaultControls } from 'ol/control';
 import { FlightInfoSheetComponent } from '../flight-info-sheet/flight-info-sheet.component';
 import { NgClass } from '@angular/common';
 import { MapType } from '../../models/map-type';
+import { FlightStatus } from '../../models/flight-status';
+import { DetailViewMobileComponent } from "../detail-view-mobile/detail-view-mobile.component";
 
 @Component({
   selector: 'app-map',
-  imports: [FlightInfoSheetComponent, RouterLink],
+  imports: [RouterLink, DetailViewMobileComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -77,9 +79,20 @@ export class MapComponent implements OnInit, AfterViewInit {
       const target = this.store.mapTarget();
       if (target) {
         const coordinate = fromLonLat([target.lng, target.lat]);
+        let mapZoom = 11;
+        switch (target.flightStatus) {
+          case FlightStatus.Flying:
+          case FlightStatus.FlyingSignalLost:
+            mapZoom = 11
+            break;
+          default:
+            mapZoom = 14
+            break;
+        }
         this.map.getView().setCenter(coordinate);
-        this.map.getView().setZoom(11);
+        this.map.getView().setZoom(mapZoom);
         untracked(() => {
+          this.unselectGlider();
           this.selectGlider(target.flarmId)
         });
         this.store.clearMapTarget();
@@ -317,12 +330,12 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.updateSingleMarkerOnMap(previousSelectedFlightData);
       }
       this.updateSingleMarkerOnMap(flightData);
-      this.store.loadFlightHistory(flarmId);
       this.centerMapIfMarkerIsCovered(flightData);
     }
     else {
       this.loadFlightsWithFilter(this.settings())
     }
+    this.store.loadFlightHistory(flarmId);
   }
 
   // Removes focus from currently selected glider, clears flight path from map and closes info card and barogram

@@ -11,6 +11,7 @@ import { defaultSettings, SettingsService } from "../services/settings.service";
 import { DepartureListItem } from "../models/departure-list-item.model";
 import { SearchResultItem } from "../models/search-result-item.model";
 import { MapTarget } from "../models/map-target.model";
+import { FlightStatus } from "../models/flight-status";
 
 
 type OgnState = {
@@ -21,6 +22,7 @@ type OgnState = {
     settings: MapSettings;
     //gliderList: GliderListItem[];
     departureList: DepartureListItem[];
+    searchText: string;
     searchResult: SearchResultItem[];
     mapTarget: MapTarget | null;
 };
@@ -33,6 +35,7 @@ const initialState: OgnState = {
     settings: defaultSettings,
     //gliderList: [],
     departureList: [],
+    searchText: '',
     searchResult: [],
     mapTarget: null,
 };
@@ -202,6 +205,7 @@ export const OgnStore = signalStore(
                     const searchResult = await apiService.searchAircraft(searchText);
                     patchState(state, current => ({
                         ...current,
+                        searchText,
                         searchResult
                     }));
                 } catch (error) {
@@ -215,14 +219,15 @@ export const OgnStore = signalStore(
             clearSearchResult: () => {
                 patchState(state, current => ({
                     ...current,
+                    searchText: initialState.searchText,
                     searchResult: initialState.searchResult
                 }));
             },
 
-            setMapTarget(flarmId: string, lat: number, lng: number): void {
+            setMapTarget(flarmId: string, lat: number, lng: number, flightStatus: FlightStatus): void {
                 patchState(state, current => ({
                     ...current,
-                    mapTarget: { flarmId, lat, lng }
+                    mapTarget: { flarmId, lat, lng, flightStatus }
                 }));
             },
 

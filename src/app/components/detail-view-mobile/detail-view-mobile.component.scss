@@ -1,0 +1,16 @@
+::ng-deep .custom-swiper::part(pagination) {
+  display: flex;
+  justify-content: center;
+}
+
+::ng-deep .custom-swiper::part(bullet) {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #d1d5db ; // Tailwind gray-300
+  opacity: 1;
+}
+
+::ng-deep .custom-swiper::part(bullet-active) {
+  background-color: #374151  ; // Tailwind gray-700
+}

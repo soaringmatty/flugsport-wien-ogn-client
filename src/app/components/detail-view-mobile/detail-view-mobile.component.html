@@ -1,0 +1,28 @@
+<div
+  class="w-full bg-white rounded-t-3xl shadow-2xl border-t border-gray-200 pt-4 overflow-hidden text-sm text-gray-800 h-full">
+  <!-- Header -->
+  <div class="px-4 flex justify-between items-start mb-2">
+    <div>
+      <div class="text-lg font-semibold text-gray-900">
+        {{ flight()?.registration }} ({{ flight()?.displayName }})
+      </div>
+      <div class="text-xs text-gray-500">
+        <span class="font-medium">Flarm ID: {{ flight()?.flarmId }}</span>
+        <span> · zuletzt {{ timeAgo() }}</span>
+      </div>
+    </div>
+    <button (click)="close.emit()" class="text-gray-500 hover:text-gray-800">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <swiper-container slides-per-view="1" pagination="true" class="custom-swiper">
+    <swiper-slide class="px-4 pb-8">
+      <app-flight-info-sheet [flight]="flight()" (close)="close.emit()" />
+    </swiper-slide>
+    <swiper-slide class="px-4 pb-8">
+      <app-barogram />
+    </swiper-slide>
+  </swiper-container>
+
+</div>
