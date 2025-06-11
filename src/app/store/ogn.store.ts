@@ -108,8 +108,13 @@ export const OgnStore = signalStore(
                         ...current,
                         flights,
                         selectedAircraftFlightData: updatedSeletedFlight || current.selectedAircraftFlightData,
-                        flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory
                     }));
+                    if (hasChanged) {
+                        patchState(state, current => ({
+                            ...current,
+                            flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory
+                        }));
+                    };
                 } catch (error) {
                     console.log(error);
                     notificationService.notify({
