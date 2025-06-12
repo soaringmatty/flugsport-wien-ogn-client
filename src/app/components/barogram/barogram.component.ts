@@ -53,7 +53,7 @@ export class BarogramComponent {
       ],
       chart: {
         type: 'line',
-        height: 144,
+        height: 140,
         parentHeightOffset: 0,
         animations: { enabled: false },
         zoom: { enabled: false },
@@ -107,11 +107,4 @@ export class BarogramComponent {
       }
     }
   });
-
-  constructor() {
-    effect(() => {
-      this.flightHistory();
-      console.log((this.chartRef?.chartInstance() as any)?.w.config)
-    })
-  }
 }

@@ -40,7 +40,7 @@ export class GliderMarkerService {
         anchorYUnits: 'fraction',
         scale: 0.38,
         img: canvas,
-        //imgSize: [88, 88]
+        //imgSize: [88, 88],
       })
     });
   }
@@ -51,6 +51,36 @@ export class GliderMarkerService {
     if (minutes > 10) return 0.6;
     if (minutes > 3) return 0.8;
     return 1;
+  }
+
+  getSortedFlights(flights: Flight[], settings: MapSettings): Flight[] {
+    const sortByPriority = (a: Flight, b: Flight): number => {
+      // 1. Nach GliderType
+      const typePriority = (flight: Flight): number => {
+        if (flight.type === GliderType.club && flight.aircraftType === AircraftType.glider) return 1;
+        if (flight.type === GliderType.club) return 2;
+        if (flight.type === GliderType.private) return 3;
+        return 4;
+      };
+
+      // 2. Nach Signal-Aktualität
+      const signalAge = (f: Flight) => Date.now() - f.timestamp;
+
+      // 3. Nach Flughöhe
+      const compareAltitude = (a: Flight, b: Flight) => b.heightMSL - a.heightMSL;
+
+      if (settings.markerColorScheme === MarkerColorScheme.altitude) {
+        return compareAltitude(a, b);
+      }
+
+      const priA = typePriority(a);
+      const priB = typePriority(b);
+      if (priA !== priB) return priA - priB;
+
+      return signalAge(a) - signalAge(b); // jünger = weiter vorne
+    };
+
+    return [...flights].sort(sortByPriority);
   }
 
   private resolveMarkerAppearance(
