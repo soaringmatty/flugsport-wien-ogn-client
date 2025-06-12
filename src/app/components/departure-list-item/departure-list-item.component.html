@@ -1,6 +1,6 @@
 <div class="py-2">
   <div class="flex justify-between items-start gap-4">
-    
+
     <!-- LEFT SIDE: Aircraft info -->
     <div class="flex flex-col text-sm font-medium text-gray-900 leading-tight">
       <div>
@@ -16,7 +16,7 @@
         <span>
           {{ getLaunchLabel(flight()?.launchType) }}
           @if (flight()?.launchHeight) {
-            • {{ flight()?.launchHeight }} m
+          • {{ flight()?.launchHeight }} m
           }
         </span>
       </div>
@@ -24,13 +24,17 @@
 
     <!-- RIGHT SIDE: Times -->
     <div class="grid grid-cols-3 gap-4 text-center text-sm text-gray-800">
-      
+
       <!-- Departure -->
       <div class="flex flex-col items-center gap-0.5">
         <span class="material-symbols-outlined text-base">flight_takeoff</span>
+        @if (flight()?.departureTimestamp) {
         <span class="font-medium">
           {{ flight()?.departureTimestamp | date: 'HH:mm' }}
         </span>
+        } @else {
+        <span class="font-medium">–</span>
+        }
         <span class="text-xs text-gray-500">Abflug</span>
       </div>
 
@@ -38,22 +42,26 @@
       <div class="flex flex-col items-center gap-0.5">
         <span class="material-symbols-outlined text-base">flight_land</span>
         @if (flight()?.landingTimestamp) {
-          <span class="font-medium">
-            {{ flight()?.landingTimestamp | date: 'HH:mm' }}
-          </span>
+        <span class="font-medium">
+          {{ flight()?.landingTimestamp | date: 'HH:mm' }}
+        </span>
         } @else {
-          <span class="font-medium">–</span>
+        <span class="font-medium">–</span>
         }
         <span class="text-xs text-gray-500">Landung</span>
       </div>
 
       <!-- Duration -->
       <div class="flex flex-col items-center gap-0.5"
-           [ngClass]="{'text-green-600': !flight()?.landingTimestamp, 'text-gray-800': flight()?.landingTimestamp}">
+        [ngClass]="{'green-icon': !flight()?.landingTimestamp, 'text-gray-800': flight()?.landingTimestamp}">
         <span class="material-symbols-outlined text-base">schedule</span>
+        @if (flight()?.departureTimestamp) {
         <span class="font-medium">
           {{ getFlightDurationTime(flight()?.departureTimestamp, flight()?.landingTimestamp) }}
         </span>
+        } @else {
+        <span class="font-medium">–</span>
+        }
         <span class="text-xs text-gray-500">Dauer</span>
       </div>
     </div>

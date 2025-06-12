@@ -9,6 +9,7 @@
   border-radius: 9999px;
   background-color: #d1d5db ; // Tailwind gray-300
   opacity: 1;
+  margin-bottom: 4px;
 }
 
 ::ng-deep .custom-swiper::part(bullet-active) {

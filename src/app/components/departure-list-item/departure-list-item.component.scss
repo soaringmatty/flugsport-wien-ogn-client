@@ -1,0 +1,16 @@
+@keyframes greenPulse {
+  0% {
+    color: #16a34a; // Tailwind: green-600
+  }
+  50% {
+    color: #20bd5a;
+  }
+  100% {
+    color: #16a34a;
+  }
+}
+
+.green-icon {
+  //animation: greenPulse 3s infinite;
+  color: #16a34a;
+}
