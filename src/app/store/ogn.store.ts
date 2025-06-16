@@ -12,6 +12,8 @@ import { DepartureListItem } from "../models/departure-list-item.model";
 import { SearchResultItem } from "../models/search-result-item.model";
 import { MapTarget } from "../models/map-target.model";
 import { FlightStatus } from "../models/flight-status";
+import { GliderType } from "../models/glider-type";
+import { AircraftType } from "../models/aircraft-type";
 
 
 type OgnState = {
@@ -20,11 +22,11 @@ type OgnState = {
     selectedAircraftFlightData: Flight | null;
     flightHistory: HistoryEntry[];
     settings: MapSettings;
-    //gliderList: GliderListItem[];
     departureList: DepartureListItem[];
     searchText: string;
     searchResult: SearchResultItem[];
     mapTarget: MapTarget | null;
+    historicFlightTarget: { flarmId: string, start?: string, end?: string } | null;
 };
 
 const initialState: OgnState = {
@@ -33,11 +35,11 @@ const initialState: OgnState = {
     selectedAircraftFlightData: null,
     flightHistory: [],
     settings: defaultSettings,
-    //gliderList: [],
     departureList: [],
     searchText: '',
     searchResult: [],
     mapTarget: null,
+    historicFlightTarget: null
 };
 
 export const OgnStore = signalStore(
@@ -48,30 +50,7 @@ export const OgnStore = signalStore(
         const settingsService = inject(SettingsService);
         const notificationService = inject(NotificationService);
 
-        // const filteredFlights = computed(() => {
-        //   let list = state.flights();
-
-        //   switch (state.settings().gliderFilterOnMap) {
-        //     case GliderFilter.club:
-        //       list = list.filter(f => clubGliders.some(g => g.FlarmId === f.flarmId));
-        //       break;
-        //     case GliderFilter.clubAndprivate:
-        //       const club = list.filter(f => clubGliders.some(g => g.FlarmId === f.flarmId));
-        //       const priv = list.filter(f => privateGliders.some(g => g.FlarmId === f.flarmId));
-        //       list = [...club, ...priv];
-        //       break;
-        //   }
-
-        //   if (state.settings().hideGlidersOnGround) {
-        //     list = list.filter(f => f.speed > 10 && f.heightAGL > 10);
-        //   }
-
-        //   return list;
-        // });
-
         return {
-            //filteredFlights,
-
             loadFlights: async (
                 maxLat: number,
                 minLat: number,
@@ -108,12 +87,13 @@ export const OgnStore = signalStore(
                     patchState(state, current => ({
                         ...current,
                         flights,
-                        selectedAircraftFlightData: updatedSeletedFlight || current.selectedAircraftFlightData,
                     }));
-                    if (hasChanged) {
+                    // Do not update flight path and flight data if historicFlightTarget is set
+                    if (hasChanged && !state.historicFlightTarget()) {
                         patchState(state, current => ({
                             ...current,
-                            flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory
+                            flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory,
+                            selectedAircraftFlightData: updatedSeletedFlight || current.selectedAircraftFlightData,
                         }));
                     };
                 } catch (error) {
@@ -125,9 +105,9 @@ export const OgnStore = signalStore(
                 }
             },
 
-            loadFlightHistory: async (flarmId: string) => {
+            loadFlightHistory: async (flarmId: string, startTimestamp?: string, endTimestamp?: string) => {
                 try {
-                    const history = await apiService.getFlightHistory(flarmId);
+                    const history = await apiService.getFlightHistory(flarmId, startTimestamp, endTimestamp);
                     patchState(state, current => ({
                         ...current,
                         flightHistory: history
@@ -151,7 +131,7 @@ export const OgnStore = signalStore(
                     patchState(state, current => ({
                         ...current,
                         selectedAircraft: initialState.selectedAircraft,
-                        selectedAircraftFlightData: initialState.selectedAircraftFlightData,
+                        selectedAircraftFlightData: state.historicFlightTarget() ? state.selectedAircraftFlightData() : initialState.selectedAircraftFlightData,
                         flightHistory: initialState.flightHistory
                     }));
                 }
@@ -181,15 +161,6 @@ export const OgnStore = signalStore(
                     settings: loaded
                 }));
             },
-
-            //   loadGliderList: (includePrivate: boolean) => {
-            //     api.getGliderList(includePrivate).subscribe({
-            //       next: list => state.gliderList.set(list),
-            //       error: () => {
-            //         notify.notify({ message: messages.defaultNetworkError, type: NotificationType.Error });
-            //       },
-            //     });
-            //   },
 
             loadDepartureList: async (knownGlidersOnly: boolean) => {
                 try {
@@ -265,7 +236,42 @@ export const OgnStore = signalStore(
                     ...current,
                     mapTarget: initialState.mapTarget
                 }));
-            }
+            },
+
+            setHistoricFlightTarget(departureListItem: DepartureListItem): void {
+                patchState(state, current => ({
+                    ...current,
+                    historicFlightTarget: { 
+                      flarmId: departureListItem.flarmId,
+                      start: departureListItem.departureTimestamp,
+                      end: departureListItem.landingTimestamp
+                    },
+                    selectedAircraftFlightData: {
+                      flarmId: departureListItem.flarmId,
+                      displayName: departureListItem.registrationShort,
+                      registration: departureListItem.registration,
+                      // Irrelevant placeholder values -> its not displayed
+                      type: GliderType.foreign,
+                      aircraftType: AircraftType.unknown,
+                      model: '',
+                      latitude: 0,
+                      longitude: 0,
+                      heightMSL: 0,
+                      timestamp: '',
+                      speed: 0,
+                      vario: 0,
+                      varioAverage: 0
+                    }
+                }));
+            },
+
+            clearHistoricFlightTarget(): void {
+                patchState(state, current => ({
+                    ...current,
+                    historicFlightTarget: initialState.historicFlightTarget,
+                    selectedAircraftFlightData: initialState.selectedAircraftFlightData
+                }));
+            },
         };
     })
 );

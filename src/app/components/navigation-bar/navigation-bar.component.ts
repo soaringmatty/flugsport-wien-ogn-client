@@ -42,12 +42,12 @@ export class NavigationBarComponent implements OnInit {
   }
 
   isActive(route: string): boolean {
-    const activeRoute = this.activeRoute();
+    const activeRoute = this.activeRoute().split('?')[0];
     // In search -> map navigation point should also be active
-    if (this.activeRoute() === '/search' && route === '/map') {
+    if (activeRoute === '/search' && route === '/map') {
       return true;
     }
-    return this.activeRoute() === route;
+    return activeRoute === route;
   }
 
   navigate(route: string) {

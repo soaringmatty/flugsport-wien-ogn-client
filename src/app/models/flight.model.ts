@@ -11,7 +11,6 @@ export interface Flight {
   latitude: number;
   longitude: number;
   heightMSL: number;
-  heightAGL: number;
   timestamp: string;
   speed: number;
   vario: number;

@@ -11,9 +11,9 @@
 </div>
 
 
-@if (selectedAircraftFlightData()) {
+@if (selectedAircraftFlightData() || historicFlightTarget()) {
     <app-detail-view-mobile
         class="absolute bottom-20 left-0 right-0"
         [flight]="selectedAircraftFlightData()"
-        (close)="unselectGlider()"/>
+        (close)="closeDetailView()"/>
 }

@@ -46,19 +46,15 @@ export class MapComponent implements OnInit, AfterViewInit {
   private readonly store = inject(OgnStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly gliderMarkerService = inject(GliderMarkerService);
-  //private readonly flightAnalysationService = inject(FlightAnalysationService);
-  //private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
 
   // Public properties
-  isMobilePortrait = signal(false);
-  showBarogram = signal(false);
   selectedAircraft = this.store.selectedAircraft;
   selectedAircraftFlightData = this.store.selectedAircraftFlightData as Signal<Flight | undefined>;
   settings = this.store.settings;
   flights = this.store.flights;
   flightHistory = this.store.flightHistory;
+  historicFlightTarget = this.store.historicFlightTarget;
 
   private markerDictionary: Map<string, GliderMarkerProperties> = new Map();
   private reloadIntervalId: any;
@@ -85,6 +81,15 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
     });
 
+    // When historic flight target is set (e.g. show single flight from departure list) -> show flight path of that flight
+    effect(() => {
+      const target = this.historicFlightTarget();
+      if (target) {
+        this.unselectGlider();
+        this.store.loadFlightHistory(target.flarmId, target.start, target.end);
+      }
+    });
+
     // Update marker whenever flights are loaded or settings are updated
     effect(() => {
       //console.debug('effect - Update marker whenever flights are loaded or settings are updated');
@@ -99,6 +104,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       const history = this.flightHistory();
       const selected = this.selectedAircraftFlightData();
       if (selected && history) this.drawFlightPathFromHistory(history);
+      if (this.historicFlightTarget()) this.fitMapToFlightPath(history);
     });
 
     // Update map and load flights when settings are updated
@@ -310,6 +316,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (this.selectedAircraft() === flarmId || !flarmId) {
       return;
     }
+    this.store.clearHistoricFlightTarget();
     const previousSelectedFlightData = this.selectedAircraftFlightData();
     this.store.selectAircraft(flarmId);
     this.router.navigate([], {
@@ -340,7 +347,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (!this.selectedAircraftFlightData()) {
       return;
     }
-    this.showBarogram.set(false);
     this.store.selectAircraft(null);
     this.updateSingleMarkerOnMap(this.selectedAircraftFlightData() as Flight)
     this.flightPathStrokeLayer.getSource()?.clear();
@@ -366,6 +372,11 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.setupTimerForGliderPositionUpdates();
       this.loadFlightsWithFilter(this.settings());
     }
+  }
+
+  closeDetailView(): void {
+    this.unselectGlider();
+    this.store.clearHistoricFlightTarget();
   }
 
   private setupTimerForGliderPositionUpdates() {
@@ -400,6 +411,22 @@ export class MapComponent implements OnInit, AfterViewInit {
   //     }));
   //     this.flightPathMarkerLayer.getSource()?.addFeature(marker);
   // }
+
+  // Adapt map zoom and center to perfectly fit flight path
+  private fitMapToFlightPath(history: HistoryEntry[]): void {
+    if (!history || history.length === 0) return;
+    const coordinates = history
+      .filter(h => h.latitude && h.longitude)
+      .map(h => fromLonLat([h.longitude, h.latitude]));
+    if (coordinates.length < 1) return;
+
+    const extent = new LineString(coordinates).getExtent();
+    this.map.getView().fit(extent, {
+      padding: [30, 30, 230, 30], // 230 is bottom padding for mobile view
+      maxZoom: 13
+    });
+  }
+
 
   private drawFlightPathFromHistory(historyEntries: HistoryEntry[]) {
     const settings = this.settings();

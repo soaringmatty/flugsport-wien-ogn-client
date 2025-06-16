@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, output, signal, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
 import { FlightInfoSheetComponent } from '../flight-info-sheet/flight-info-sheet.component';
 import { CommonModule } from '@angular/common';
 import { BarogramComponent } from "../barogram/barogram.component";
@@ -6,6 +6,7 @@ import { Flight } from '../../models/flight.model';
 import { Subscription, timer } from 'rxjs';
 import { getTimeAgoString } from '../../utils/time.utils';
 import { register } from 'swiper/element/bundle';
+import { OgnStore } from '../../store/ogn.store';
 
 // Register web components for swiper
 register();
@@ -19,12 +20,15 @@ register();
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DetailViewMobileComponent {
+  private readonly store = inject(OgnStore);
+
   flight = input<Flight>()
   close = output<void>();
   activePage = signal(0);
   totalPages = 2;
   timeAgo = signal('');
   copied = signal(false);
+  historicFlightTarget = this.store.historicFlightTarget;
   private timerSub: Subscription | null = null;
   private readonly copyTooltipShowTime = 1200;
 

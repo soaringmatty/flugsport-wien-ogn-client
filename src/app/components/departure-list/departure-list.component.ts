@@ -4,6 +4,7 @@ import { NgFor } from '@angular/common';
 import { DepartureListItemComponent } from "../departure-list-item/departure-list-item.component";
 import { OgnStore } from '../../store/ogn.store';
 import { interval, Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-departure-list',
@@ -15,6 +16,7 @@ import { interval, Subject, takeUntil } from 'rxjs';
 })
 export class DepartureListComponent implements OnInit, OnDestroy {
     private readonly ognStore = inject(OgnStore);
+    private readonly router = inject(Router);
     private readonly destroy$ = new Subject<void>();
 
     departureList = this.ognStore.departureList;
@@ -46,7 +48,8 @@ export class DepartureListComponent implements OnInit, OnDestroy {
     }
 
     showFlightOnMap(listItem: DepartureListItem): void {
-        // TODO
+        this.ognStore.setHistoricFlightTarget(listItem);
+        this.router.navigate(['/map']);
     }
 
     filterForAircraft(flarmId: string | null): void {

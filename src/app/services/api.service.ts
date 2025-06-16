@@ -43,9 +43,16 @@ export class ApiService {
     );
   }
 
-  async getFlightHistory(flarmId: string): Promise<HistoryEntry[]> {
+  async getFlightHistory(flarmId: string, startTimestamp?: string, endTimestamp?: string): Promise<HistoryEntry[]> {
     const url = api.getFlightHistory.replace('{id}', flarmId);
-    const response = await firstValueFrom(this.http.get<number[][]>(url));
+    let params = new HttpParams();
+    if (startTimestamp) {
+      params = params.append('startTimestamp', startTimestamp);
+    }
+    if (endTimestamp) {
+      params = params.append('endTimestamp', endTimestamp);
+    }
+    const response = await firstValueFrom(this.http.get<number[][]>(url, { params }));
     return response.map(([timestamp, lat, lng, alt, speed, vario]) => ({
       timestamp,
       latitude: lat,
@@ -61,11 +68,6 @@ export class ApiService {
     const response = await firstValueFrom(this.http.get<HistoryEntry[]>(url));
     return response;
   }
-
-  // getGliderList(includePrivateGliders: boolean = true): Observable<GliderListItem[]> {
-  //   const url = api.getGliderList.replace('{pg}', includePrivateGliders.toString())
-  //   return this.http.get<GliderListItem[]>(url);
-  // }
 
   async getDepartureList(knownGlidersOnly: boolean, useNewDepartureList: boolean): Promise<DepartureListItem[]> {
     const apiUrl = useNewDepartureList ? api.getDepartureList : api.getDepartureListGlidernet;

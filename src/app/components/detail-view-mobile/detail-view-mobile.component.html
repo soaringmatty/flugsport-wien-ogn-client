@@ -8,7 +8,9 @@
       </div>
       <div class="text-xs text-gray-500">
         <span class="font-medium">Flarm ID: {{ flight()?.flarmId }}</span>
+        @if (!historicFlightTarget()) {
         <span> · zuletzt {{ timeAgo() }}</span>
+        }
       </div>
     </div>
     <div class="flex items-center gap-3">
@@ -36,10 +38,12 @@
   </div>
 
   <swiper-container slides-per-view="1" pagination="true" class="custom-swiper">
+    @if (!historicFlightTarget()) {
     <swiper-slide class="px-4 pb-14">
       <app-flight-info-sheet [flight]="flight()" (close)="close.emit()" />
     </swiper-slide>
-    <swiper-slide class="-mt-4 pr-3">
+    }
+    <swiper-slide class="-mt-4 pr-3" [class.pb-2]="historicFlightTarget()">
       <app-barogram />
     </swiper-slide>
   </swiper-container>
