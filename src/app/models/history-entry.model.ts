@@ -1,7 +1,8 @@
 export interface HistoryEntry {
-    timestamp: number,
+    timestamp: string | number, // TODO komplett auf string umstellen
     latitude: number,
     longitude: number,
     altitude: number,
-    groundHeight: number,
+    speed: number,
+    verticalSpeed: number
 }

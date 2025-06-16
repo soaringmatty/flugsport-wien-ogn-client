@@ -28,6 +28,9 @@ export class SearchComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.setFocusToSearchInput();
+    if (this.searchResults()?.length > 0) {
+      this.restartSearchTimer();
+    }
   }
 
   searchAircraft(event: Event): void {

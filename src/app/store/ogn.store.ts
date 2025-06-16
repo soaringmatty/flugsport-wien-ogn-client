@@ -100,7 +100,8 @@ export const OgnStore = signalStore(
                             altitude: updatedSeletedFlight.heightMSL,
                             latitude: updatedSeletedFlight.latitude,
                             longitude: updatedSeletedFlight.longitude,
-                            groundHeight: updatedSeletedFlight.heightMSL - updatedSeletedFlight.heightAGL
+                            speed: updatedSeletedFlight.speed,
+                            verticalSpeed: updatedSeletedFlight.vario,
                         });
                     }
 
@@ -192,7 +193,7 @@ export const OgnStore = signalStore(
 
             loadDepartureList: async (knownGlidersOnly: boolean) => {
                 try {
-                    const departureList = await apiService.getDepartureList(knownGlidersOnly);
+                    const departureList = await apiService.getDepartureList(knownGlidersOnly, state.settings().useNewDepartureList);
                     patchState(state, current => ({
                         ...current,
                         departureList
@@ -234,6 +235,29 @@ export const OgnStore = signalStore(
                     ...current,
                     mapTarget: { flarmId, lat, lng, flightStatus }
                 }));
+            },
+
+            loadAndSetMapTarget: async (flarmId: string) => {
+                try {
+                    const searchResult = await apiService.searchAircraft(flarmId);
+                    if (searchResult && searchResult.length > 0) {
+                        var aircraft = searchResult[0];
+                        patchState(state, current => ({
+                            ...current,
+                            mapTarget: {
+                                flarmId: aircraft.flarmId,
+                                lat: aircraft.latitude,
+                                lng: aircraft.longitude,
+                                flightStatus: aircraft.flightStatus
+                            }
+                        }));
+                    }
+                } catch (error) {
+                    notificationService.notify({
+                        message: messages.defaultNetworkError,
+                        type: NotificationType.Error
+                    });
+                }
             },
 
             clearMapTarget(): void {

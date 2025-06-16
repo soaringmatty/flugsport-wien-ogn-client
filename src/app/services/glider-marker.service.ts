@@ -45,8 +45,8 @@ export class GliderMarkerService {
     });
   }
 
-  getMarkerOpacity(lastUpdateTimestamp: number, isSelected: boolean): number {
-    const minutes = (Date.now() - lastUpdateTimestamp) / 60000;
+  getMarkerOpacity(lastUpdateTimestamp: string, isSelected: boolean): number {
+    const minutes = (Date.now() - new Date(lastUpdateTimestamp).getTime()) / 60000;
     if (minutes > 20 && !isSelected) return 0.4;
     if (minutes > 10) return 0.6;
     if (minutes > 3) return 0.8;
@@ -64,7 +64,7 @@ export class GliderMarkerService {
       };
 
       // 2. Nach Signal-Aktualität
-      const signalAge = (f: Flight) => Date.now() - f.timestamp;
+      const signalAge = (f: Flight) => Date.now() - new Date(f.timestamp).getTime();
 
       // 3. Nach Flughöhe
       const compareAltitude = (a: Flight, b: Flight) => b.heightMSL - a.heightMSL;
@@ -144,7 +144,7 @@ export class GliderMarkerService {
     gliderType: GliderType,
     aircraftType: AircraftType,
     altitude: number,
-    lastUpdateTimestamp: number
+    lastUpdateTimestamp: string,
   ): Promise<HTMLCanvasElement> {
     const { imageSrc, textColor } = this.resolveMarkerAppearance(settings, isSelected, gliderType, aircraftType, altitude);
     const image = await this.loadImage(imageSrc);

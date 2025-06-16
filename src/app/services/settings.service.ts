@@ -18,7 +18,8 @@ export const defaultSettings: MapSettings = {
   showChangelogForNewVersion: true,
   markerColorScheme: MarkerColorScheme.highlightKnownGliders,
   useUtcTimeInDepartureList: true,
-  reduceDataUsage: false
+  reduceDataUsage: false,
+  useNewDepartureList: false
 }
 
 export function getRefreshTimeout(reduceDataUsage: boolean): number {

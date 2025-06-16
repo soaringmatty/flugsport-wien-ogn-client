@@ -4,13 +4,7 @@ import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexStroke, ApexDataLabels, 
 import { OgnStore } from '../../store/ogn.store';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-
-export interface HistoryEntry {
-  timestamp: number;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-}
+import { HistoryEntry } from '../../models/history-entry.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -45,7 +39,7 @@ export class BarogramComponent {
         {
           name: 'Höhe (MSL)',
           data: this.flightHistory().map(entry => ({
-            x: new Date(entry.timestamp).getTime(),
+            x: entry.timestamp,
             y: entry.altitude,
             meta: entry
           })),
@@ -71,6 +65,7 @@ export class BarogramComponent {
         type: 'datetime',
         tooltip: { enabled: false },
         labels: {
+          datetimeUTC: false,
           datetimeFormatter: {
             hour: 'HH:mm',
             minute: 'HH:mm',
@@ -101,6 +96,8 @@ export class BarogramComponent {
             <div class="p-2 text-xs">
               <strong>${new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong><br/>
               Höhe: ${entry.altitude} m<br/>
+              Geschwindigkeit: ${entry.speed} km/h<br/>
+              Vario: ${entry.verticalSpeed} m/s<br/>
             </div>
           `;
         }

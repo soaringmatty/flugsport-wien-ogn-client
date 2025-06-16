@@ -5,8 +5,8 @@ export interface DepartureListItem {
   registration: string;
   registrationShort: string;
   model: string;
-  departureTimestamp?: number;
-  landingTimestamp?: number;
+  departureTimestamp?: string;
+  landingTimestamp?: string;
   launchType: LaunchType;
   launchHeight?: number;
 }

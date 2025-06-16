@@ -49,22 +49,13 @@ export class DepartureListItemComponent {
         }
     }
 
-    getFlightDurationText(departure?: number, landing?: number): string {
+    getFlightDurationTime(departure?: string, landing?: string): string {
         if (!departure) return '';
-        const end = landing ?? Date.now();
-        const diff = end - departure;
 
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
+        const departureTime = new Date(departure).getTime();
+        const landingTime = landing ? new Date(landing).getTime() : Date.now();
 
-        return `${hours > 0 ? hours + ' h ' : ''}${mins} min`;
-    }
-
-    getFlightDurationTime(departure?: number, landing?: number): string {
-        if (!departure) return '';
-        const end = landing ?? Date.now();
-        const diff = end - departure;
+        const diff = landingTime - departureTime;
 
         const totalMinutes = Math.floor(diff / 60000);
         const hours = Math.floor(totalMinutes / 60);

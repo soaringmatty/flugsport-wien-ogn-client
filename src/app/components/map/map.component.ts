@@ -1,8 +1,8 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, effect, inject, OnInit, Signal, signal, untracked, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, Signal, signal, untracked, ViewChild } from '@angular/core';
 import { Flight } from '../../models/flight.model';
 import { MapSettings } from '../../models/settings.model';
 import { GliderMarkerProperties } from '../../models/glider-marker-properties.model';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { OgnStore } from '../../store/ogn.store';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -46,6 +46,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private readonly store = inject(OgnStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly gliderMarkerService = inject(GliderMarkerService);
   //private readonly flightAnalysationService = inject(FlightAnalysationService);
   //private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
@@ -62,6 +63,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private markerDictionary: Map<string, GliderMarkerProperties> = new Map();
   private reloadIntervalId: any;
   private mapChangeTriggerTimeout: any;
+  private destroy$ = new Subject<void>();
 
   // Map and Layers
   private map!: OlMap;
@@ -78,23 +80,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     effect(() => {
       const target = this.store.mapTarget();
       if (target) {
-        const coordinate = fromLonLat([target.lng, target.lat]);
-        let mapZoom = 0;
-        switch (target.flightStatus) {
-          case FlightStatus.Flying:
-          case FlightStatus.FlyingSignalLost:
-            mapZoom = 10
-            break;
-          default:
-            mapZoom = 13
-            break;
-        }
-        this.map.getView().setCenter(coordinate);
-        this.map.getView().setZoom(mapZoom);
-        untracked(() => {
-          this.unselectGlider();
-          this.selectGlider(target.flarmId)
-        });
+        this.showFlarmIdOnMap(target.flarmId, target.lng, target.lat, target.flightStatus);
         this.store.clearMapTarget();
       }
     });
@@ -128,33 +114,20 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.loadFlightsWithFilter(settings);
       });
     });
-
-    // effect(() => {
-    //     this.mapBarogramSyncService.markerLocationUpdateRequested
-    //         .pipe(takeUntilDestroyed())
-    //         .subscribe(markerLocation => {
-    //             if (markerLocation) this.drawMarkerOnFlightPath(markerLocation);
-    //         });
-    // });
-
-    // effect(() => {
-    //   this.route.paramMap
-    //     .pipe(takeUntilDestroyed())
-    //     .subscribe(params => {
-    //       const lat = params.get('lat');
-    //       const lon = params.get('lon');
-    //       if (lat && lon) {
-    //         const coordinate = fromLonLat([+lon, +lat]);
-    //         this.map.getView().setCenter(coordinate);
-    //         this.map.getView().setZoom(12);
-    //       }
-    //     });
-    // });
   }
 
   ngOnInit(): void {
     this.initializeMap();
     this.initiallyLoadData();
+
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const flarmId = params.get('flarmId');
+        if (flarmId && this.selectedAircraft() !== flarmId) {
+          this.store.loadAndSetMapTarget(flarmId);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -163,16 +136,33 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy(): void {
     clearInterval(this.reloadIntervalId);
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   openSearchPage(): void {
     this.router.navigate(['./search'])
   }
 
-  //   toggleBarogram(value: boolean) {
-  //     this.showBarogram.set(value);
-  //     if (!value) this.mapBarogramSyncService.updateLocationMarkerOnMap();
-  //   }
+  private showFlarmIdOnMap(flarmId: string, lng: number, lat: number, flightStatus: FlightStatus) {
+    const coordinate = fromLonLat([lng, lat]);
+    let mapZoom = 0;
+    switch (flightStatus) {
+      case FlightStatus.Flying:
+      case FlightStatus.FlyingSignalLost:
+        mapZoom = 11
+        break;
+      default:
+        mapZoom = 13
+        break;
+    }
+    this.map.getView().setCenter(coordinate);
+    this.map.getView().setZoom(mapZoom);
+    untracked(() => {
+      this.unselectGlider();
+      this.selectGlider(flarmId)
+    });
+  }
 
   private loadFlightsWithFilter(settings: MapSettings) {
     const extent = this.map.getView().calculateExtent(this.map.getSize());
@@ -322,6 +312,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     const previousSelectedFlightData = this.selectedAircraftFlightData();
     this.store.selectAircraft(flarmId);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { flarmId },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
     const flightData = this.flights().find((x) => x.flarmId === flarmId);
     if (flightData) {
       this.store.setSelectedAircraftFlightData(flightData);
@@ -434,55 +430,55 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.flightPathLayer.getSource()?.addFeature(inner);
   }
 
-updateGliderPositionsOnMap(flights: Flight[]): void {
-  const sortedFlights = this.gliderMarkerService.getSortedFlights(flights, this.settings());
-  const baseZIndex = 1000;
+  updateGliderPositionsOnMap(flights: Flight[]): void {
+    const sortedFlights = this.gliderMarkerService.getSortedFlights(flights, this.settings());
+    const baseZIndex = 1000;
 
-  sortedFlights.forEach((flight, index) => {
-    const zIndex = baseZIndex - index;
-    this.updateSingleMarkerOnMap(flight, zIndex);
-  });
-
-  this.removeObsoleteGliderMarkers(flights);
-}
-
-private async updateSingleMarkerOnMap(flight: Flight, zIndex?: number) {
-  if (!flight?.longitude || !flight.latitude) return;
-
-  const layer = this.getLayerByGliderType(flight.type);
-  const source = layer.getSource();
-  const existingFeature = source?.getFeatureById(flight.flarmId);
-
-  const isSelected = this.selectedAircraftFlightData()?.flarmId === flight.flarmId;
-
-  const iconStyle = await this.gliderMarkerService.getGliderMarkerStyle(
-    flight,
-    this.settings(),
-    isSelected
-  );
-
-  if (zIndex) {
-    iconStyle.setZIndex(isSelected ? 10000 : zIndex);
-  }
-
-  if (existingFeature) {
-    existingFeature.setGeometry(new Point(fromLonLat([flight.longitude, flight.latitude])));
-    existingFeature.setStyle(iconStyle);
-  } else {
-    const feature = new Feature({
-      geometry: new Point(fromLonLat([flight.longitude, flight.latitude]))
+    sortedFlights.forEach((flight, index) => {
+      const zIndex = baseZIndex - index;
+      this.updateSingleMarkerOnMap(flight, zIndex);
     });
-    feature.setId(flight.flarmId);
-    feature.setStyle(iconStyle);
-    source?.addFeature(feature);
+
+    this.removeObsoleteGliderMarkers(flights);
   }
 
-  this.markerDictionary.set(flight.flarmId, {
-    isSelected,
-    opacity: this.gliderMarkerService.getMarkerOpacity(flight.timestamp, isSelected),
-    altitudeLayer: Math.floor(flight.heightMSL / 250)
-  });
-}
+  private async updateSingleMarkerOnMap(flight: Flight, zIndex?: number) {
+    if (!flight?.longitude || !flight.latitude) return;
+
+    const layer = this.getLayerByGliderType(flight.type);
+    const source = layer.getSource();
+    const existingFeature = source?.getFeatureById(flight.flarmId);
+
+    const isSelected = this.selectedAircraftFlightData()?.flarmId === flight.flarmId;
+
+    const iconStyle = await this.gliderMarkerService.getGliderMarkerStyle(
+      flight,
+      this.settings(),
+      isSelected
+    );
+
+    if (zIndex) {
+      iconStyle.setZIndex(isSelected ? 10000 : zIndex);
+    }
+
+    if (existingFeature) {
+      existingFeature.setGeometry(new Point(fromLonLat([flight.longitude, flight.latitude])));
+      existingFeature.setStyle(iconStyle);
+    } else {
+      const feature = new Feature({
+        geometry: new Point(fromLonLat([flight.longitude, flight.latitude]))
+      });
+      feature.setId(flight.flarmId);
+      feature.setStyle(iconStyle);
+      source?.addFeature(feature);
+    }
+
+    this.markerDictionary.set(flight.flarmId, {
+      isSelected,
+      opacity: this.gliderMarkerService.getMarkerOpacity(flight.timestamp, isSelected),
+      altitudeLayer: Math.floor(flight.heightMSL / 250)
+    });
+  }
 
 
 

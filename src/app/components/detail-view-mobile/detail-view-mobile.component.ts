@@ -24,7 +24,9 @@ export class DetailViewMobileComponent {
   activePage = signal(0);
   totalPages = 2;
   timeAgo = signal('');
+  copied = signal(false);
   private timerSub: Subscription | null = null;
+  private readonly copyTooltipShowTime = 1200;
 
   constructor() {
     // React to timestamp changes
@@ -46,6 +48,15 @@ export class DetailViewMobileComponent {
         this.timeAgo.set(this.getTimeAgoString(timestamp));
       });
     });
+  }
+
+  copyFlightLink(): void {
+    const flarmId = this.flight()?.flarmId;
+    if (!flarmId) return;
+    const url = `${location.origin}/map?flarmId=${flarmId}`;
+    navigator.clipboard.writeText(url);
+    this.copied.set(true);
+    setTimeout(() => this.copied.set(false), this.copyTooltipShowTime);
   }
 
   onSwipeLeft() {

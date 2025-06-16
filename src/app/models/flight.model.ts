@@ -12,7 +12,7 @@ export interface Flight {
   longitude: number;
   heightMSL: number;
   heightAGL: number;
-  timestamp: number;
+  timestamp: string;
   speed: number;
   vario: number;
   varioAverage: number;

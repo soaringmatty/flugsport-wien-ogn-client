@@ -45,7 +45,7 @@
           </div>
 
           <!-- Last Seen Info -->
-          @if (result.timestamp > 0) {
+          @if (result.timestamp) {
           <div class="text-xs font-normal text-gray-500 mt-0.5">
             zuletzt {{ getTimeAgoString(result.timestamp) }}
           </div>

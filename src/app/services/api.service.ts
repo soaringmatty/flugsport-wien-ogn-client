@@ -46,37 +46,30 @@ export class ApiService {
   async getFlightHistory(flarmId: string): Promise<HistoryEntry[]> {
     const url = api.getFlightHistory.replace('{id}', flarmId);
     const response = await firstValueFrom(this.http.get<number[][]>(url));
-    return response.map(([timestamp, , lat, lng, alt, ground]) => ({
+    return response.map(([timestamp, lat, lng, alt, speed, vario]) => ({
       timestamp,
       latitude: lat,
       longitude: lng,
       altitude: alt,
-      groundHeight: ground,
+      speed,
+      verticalSpeed: vario,
     }));
   }
 
-  // getFlightHistory(flarmId: string): Observable<HistoryEntry[]> {
-  //   const url = api.getFlightHistory.replace('{id}', flarmId)
-  //   return this.http.get<number[][]>(url).pipe(
-  //     map(response => response.map(rawEntry => {
-  //       const historyEntry: HistoryEntry = {
-  //         timestamp: rawEntry[0],
-  //         latitude: rawEntry[2],
-  //         longitude: rawEntry[3],
-  //         altitude: rawEntry[4],
-  //         groundHeight: rawEntry[5]
-  //       }
-  //       return historyEntry;
-  //     }))
-  //   );
+  async getFlightHistoryJson(flarmId: string): Promise<HistoryEntry[]> {
+    const url = api.getFlightHistory.replace('{id}', flarmId);
+    const response = await firstValueFrom(this.http.get<HistoryEntry[]>(url));
+    return response;
+  }
 
   // getGliderList(includePrivateGliders: boolean = true): Observable<GliderListItem[]> {
   //   const url = api.getGliderList.replace('{pg}', includePrivateGliders.toString())
   //   return this.http.get<GliderListItem[]>(url);
   // }
 
-  async getDepartureList(includePrivateGliders: boolean = true): Promise<DepartureListItem[]> {
-    const url = api.getDepartureList.replace('{0}', includePrivateGliders.toString())
+  async getDepartureList(knownGlidersOnly: boolean, useNewDepartureList: boolean): Promise<DepartureListItem[]> {
+    const apiUrl = useNewDepartureList ? api.getDepartureList : api.getDepartureListGlidernet;
+    const url = apiUrl.replace('{0}', knownGlidersOnly.toString())
     const request = this.http.get<DepartureListItem[]>(url);
     return await firstValueFrom(request);
   }

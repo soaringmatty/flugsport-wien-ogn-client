@@ -11,9 +11,28 @@
         <span> · zuletzt {{ timeAgo() }}</span>
       </div>
     </div>
-    <button (click)="close.emit()" class="text-gray-500 hover:text-gray-800">
-      <span class="material-symbols-outlined">close</span>
-    </button>
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <button (click)="copyFlightLink()"
+          class="bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center active:bg-gray-300 transition"
+          title="Link kopieren">
+          <span class="material-symbols-outlined text-gray-800 text-base">link</span>
+        </button>
+
+        @if (copied()) {
+        <div
+          class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white text-gray-900 text-xs px-2 py-1 rounded shadow whitespace-nowrap min-w-[80px] text-center">
+          Link kopiert
+        </div>
+
+        }
+      </div>
+      <button (click)="close.emit()"
+        class="bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center active:bg-gray-200"
+        title="Link kopieren">
+        <span class="material-symbols-outlined text-gray-800 text-base">close</span>
+      </button>
+    </div>
   </div>
 
   <swiper-container slides-per-view="1" pagination="true" class="custom-swiper">

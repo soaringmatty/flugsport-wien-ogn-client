@@ -10,7 +10,7 @@ export interface SearchResultItem {
   latitude: number;
   longitude: number;
   altitude: number;
-  timestamp: number;
+  timestamp: string;
   flightStatus: FlightStatus;
   priority: number;
   matchRank: number;
