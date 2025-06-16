@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1750079502163,
+  "timestamp": 1750080089577,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -14,7 +14,7 @@
         "/chunk-2VMXMS7J.js",
         "/chunk-IB4ELQXA.js",
         "/index.html",
-        "/main-37Q7NH2H.js",
+        "/main-EITQ5TNQ.js",
         "/polyfills-FFHMD2TL.js",
         "/styles-ELVM24XV.css"
       ],
@@ -98,8 +98,8 @@
     "/assets/pwa/web-app-manifest-512x512.png": "9e19a2e79558ab5516c18441a51b0485ee6a888e",
     "/chunk-2VMXMS7J.js": "0d4757e86a4cf693bbbe3dce3ba35dde955dfad4",
     "/chunk-IB4ELQXA.js": "c8240651aa71246b7ce8889fa746543cf81e132d",
-    "/index.html": "2012827fd1691cf2852da187b28ccdfed14c5a37",
-    "/main-37Q7NH2H.js": "07760c7f4d9b5fcb5c202559bb2c5fd22d103a03",
+    "/index.html": "27b3e3484e9c0c1d4bdb075ad17f4f583dc93744",
+    "/main-EITQ5TNQ.js": "db3916677e4781e585982a676b6f06ce18db23f1",
     "/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/styles-ELVM24XV.css": "55dcf0cef8d3383f7b767d4fc11b7efbb6840faf"
   },
