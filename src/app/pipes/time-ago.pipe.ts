@@ -4,12 +4,15 @@ import { ClockService } from '../services/clock.service';
 
 @Pipe({
   name: 'timeAgo',
-  pure: false
+  pure: false,
 })
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
-    private subscription!: Subscription;
-    
-    constructor(private clockService: ClockService, private changeDetectorRef: ChangeDetectorRef) {}
+  private subscription!: Subscription;
+
+  constructor(
+    private clockService: ClockService,
+    private changeDetectorRef: ChangeDetectorRef,
+  ) {}
 
   transform(value: any, ...args: any[]): any {
     this.removeSubscription();
@@ -19,9 +22,9 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
     if (value) {
       const seconds = Math.floor((+new Date() - +new Date(value)) / 1000);
       const intervals: { [key: string]: number } = {
-        'Stunde': 3600,
-        'Minute': 60,
-        'Sekunde': 1
+        Stunde: 3600,
+        Minute: 60,
+        Sekunde: 1,
       };
       let counter;
       for (const i in intervals) {

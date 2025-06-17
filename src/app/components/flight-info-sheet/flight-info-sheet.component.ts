@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, Input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  Input,
+  output,
+  signal,
+} from '@angular/core';
 import { Flight } from '../../models/flight.model';
 import { NgClass, NgIf } from '@angular/common';
 import { Subscription, timer } from 'rxjs';
@@ -9,10 +19,10 @@ import { getTimeAgoString } from '../../utils/time.utils';
   imports: [NgClass, NgIf],
   templateUrl: './flight-info-sheet.component.html',
   styleUrl: './flight-info-sheet.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlightInfoSheetComponent {
-  flight = input<Flight>()
+  flight = input<Flight>();
   close = output<void>();
 
   private readonly varioMedium = 1.2;
@@ -23,23 +33,17 @@ export class FlightInfoSheetComponent {
     if (!this.flight()) return;
     const vario = this.flight()?.vario as number;
     let base = vario >= 0 ? 'stat_' : 'stat_minus_';
-    if (Math.abs(vario) >= this.varioHigh) 
-      return `${base}3`;
-    else if (Math.abs(vario) >= this.varioMedium) 
-      return `${base}2`;
-    else
-      return `${base}1`;
+    if (Math.abs(vario) >= this.varioHigh) return `${base}3`;
+    else if (Math.abs(vario) >= this.varioMedium) return `${base}2`;
+    else return `${base}1`;
   });
   readonly varioAverageIcon = computed(() => {
     if (!this.flight()) return;
     const vario = this.flight()?.varioAverage as number;
     let base = vario >= 0 ? 'stat_' : 'stat_minus_';
-    if (Math.abs(vario) >= this.varioHigh) 
-      return `${base}3`;
-    else if (Math.abs(vario) >= this.varioMedium) 
-      return `${base}2`;
-    else
-      return `${base}1`;
+    if (Math.abs(vario) >= this.varioHigh) return `${base}3`;
+    else if (Math.abs(vario) >= this.varioMedium) return `${base}2`;
+    else return `${base}1`;
   });
 
   getAircraftTypeLabel(type: number): string {

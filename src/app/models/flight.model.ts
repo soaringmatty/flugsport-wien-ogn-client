@@ -1,5 +1,5 @@
-import { AircraftType } from "./aircraft-type";
-import { GliderType } from "./glider-type";
+import { AircraftType } from './aircraft-type';
+import { GliderType } from './glider-type';
 
 export interface Flight {
   flarmId: string;

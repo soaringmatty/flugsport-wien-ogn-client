@@ -1,4 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, effect, ElementRef, inject, OnDestroy, signal, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  OnDestroy,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { OgnStore } from '../../store/ogn.store';
 import { NgClass, NgFor, NgIf } from '@angular/common';
@@ -6,18 +16,16 @@ import { SearchResultItem } from '../../models/search-result-item.model';
 import { interval, Subscription } from 'rxjs';
 import { getTimeAgoString } from '../../utils/time.utils';
 
-
 @Component({
   selector: 'app-search',
   imports: [NgClass, NgFor],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchComponent implements AfterViewInit, OnDestroy {
   readonly router = inject(Router);
   readonly store = inject(OgnStore);
-  
 
   @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
 
@@ -38,15 +46,14 @@ export class SearchComponent implements AfterViewInit, OnDestroy {
     if (this.currentSearchText() === '') {
       this.stopSearchTimer();
       this.store.clearSearchResult();
-    }
-    else {
+    } else {
       this.store.searchAircraft(this.currentSearchText());
       this.restartSearchTimer();
     }
   }
 
   clearSearchText(): void {
-    this.currentSearchText.set('')
+    this.currentSearchText.set('');
     this.stopSearchTimer();
     this.store.clearSearchResult();
     this.setFocusToSearchInput();

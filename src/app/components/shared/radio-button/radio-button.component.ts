@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   templateUrl: './radio-button.component.html',
   styleUrl: './radio-button.component.scss',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RadioButtonComponent {
   label = input('');

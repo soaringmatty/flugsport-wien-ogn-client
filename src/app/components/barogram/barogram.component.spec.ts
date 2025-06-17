@@ -8,9 +8,8 @@ describe('BarogramComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BarogramComponent]
-    })
-    .compileComponents();
+      imports: [BarogramComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BarogramComponent);
     component = fixture.componentInstance;

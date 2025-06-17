@@ -1,9 +1,9 @@
-import { Coordinate } from "ol/coordinate";
+import { Coordinate } from 'ol/coordinate';
 
 export function chaikinsAlgorithm(
   coords: Coordinate[],
   iterations: number = 3,
-  factor: number = 0.25
+  factor: number = 0.25,
 ): Coordinate[] {
   let result = coords;
   for (let i = 0; i < iterations; i++) {

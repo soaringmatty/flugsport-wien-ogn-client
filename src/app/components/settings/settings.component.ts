@@ -8,15 +8,23 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import { MarkerColorScheme } from '../../models/marker-color-scheme';
 import { FormsModule } from '@angular/forms';
 import { defaultSettings } from '../../services/settings.service';
-import { ToggleComponent } from "../shared/toggle/toggle.component";
-import { RadioButtonComponent } from "../shared/radio-button/radio-button.component";
+import { ToggleComponent } from '../shared/toggle/toggle.component';
+import { RadioButtonComponent } from '../shared/radio-button/radio-button.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [NgIf, NgFor, NgClass, FormsModule, ToggleComponent, RadioButtonComponent, RadioButtonComponent],
+  imports: [
+    NgIf,
+    NgFor,
+    NgClass,
+    FormsModule,
+    ToggleComponent,
+    RadioButtonComponent,
+    RadioButtonComponent,
+  ],
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent {
   private readonly store = inject(OgnStore);
@@ -46,7 +54,7 @@ export class SettingsComponent {
 
   constructor() {
     this.store.loadSettings();
-    this.settings.set({ ...this.store.settings() })
+    this.settings.set({ ...this.store.settings() });
   }
 
   save(): void {
@@ -54,23 +62,23 @@ export class SettingsComponent {
   }
 
   setMapType(mapType: MapType) {
-    this.settings.update(prev => ({ ...prev, mapType }));
+    this.settings.update((prev) => ({ ...prev, mapType }));
     this.save();
   }
 
   onHideGlidersOnGroundChange(event: Event) {
     const hideGlidersOnGround = (event.target as HTMLInputElement).checked;
-    this.settings.update(prev => ({ ...prev, hideGlidersOnGround }));
+    this.settings.update((prev) => ({ ...prev, hideGlidersOnGround }));
     this.save();
   }
 
   onAircraftFilterChange(gliderFilterOnMap: GliderFilter) {
-    this.settings.update(prev => ({ ...prev, gliderFilterOnMap }));
+    this.settings.update((prev) => ({ ...prev, gliderFilterOnMap }));
     this.save();
   }
 
   onMarkerColorSchemeChange(markerColorScheme: MarkerColorScheme) {
-    this.settings.update(prev => ({ ...prev, markerColorScheme }));
+    this.settings.update((prev) => ({ ...prev, markerColorScheme }));
     this.save();
   }
 }

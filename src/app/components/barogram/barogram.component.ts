@@ -1,6 +1,25 @@
-import { ChangeDetectionStrategy, Component, inject, Signal, computed, effect, ViewChild, AfterViewInit, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Signal,
+  computed,
+  effect,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
-import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexStroke, ApexDataLabels, ApexTooltip, ApexYAxis } from 'ng-apexcharts';
+import {
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexStroke,
+  ApexDataLabels,
+  ApexTooltip,
+  ApexYAxis,
+} from 'ng-apexcharts';
 import { OgnStore } from '../../store/ogn.store';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -22,7 +41,7 @@ export type ChartOptions = {
   standalone: true,
   imports: [CommonModule, NgApexchartsModule],
   templateUrl: './barogram.component.html',
-  styleUrl: './barogram.component.scss'
+  styleUrl: './barogram.component.scss',
 })
 export class BarogramComponent {
   //private subscription: Subscription | undefined;
@@ -38,10 +57,10 @@ export class BarogramComponent {
       series: [
         {
           name: 'Höhe (MSL)',
-          data: this.flightHistory().map(entry => ({
+          data: this.flightHistory().map((entry) => ({
             x: entry.timestamp,
             y: entry.altitude,
-            meta: entry
+            meta: entry,
           })),
         },
       ],
@@ -56,10 +75,10 @@ export class BarogramComponent {
       stroke: {
         curve: 'smooth',
         width: 2,
-        colors: ['#991b1b'] // dark red
+        colors: ['#991b1b'], // dark red
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       xaxis: {
         type: 'datetime',
@@ -69,22 +88,22 @@ export class BarogramComponent {
           datetimeFormatter: {
             hour: 'HH:mm',
             minute: 'HH:mm',
-            second: 'HH:mm'
-          }
-        }
+            second: 'HH:mm',
+          },
+        },
       },
       yaxis: {
         labels: {
-          formatter: (val: number) => `${Math.round(val)} m`
-        }
+          formatter: (val: number) => `${Math.round(val)} m`,
+        },
       },
       markers: {
         size: 0,
         colors: ['#991b1b'],
         hover: {
           size: 6,
-          sizeOffset: 10
-        }
+          sizeOffset: 10,
+        },
       },
       tooltip: {
         marker: {
@@ -100,8 +119,8 @@ export class BarogramComponent {
               Vario: ${entry.verticalSpeed} m/s<br/>
             </div>
           `;
-        }
-      }
-    }
+        },
+      },
+    };
   });
 }

@@ -1,20 +1,19 @@
-import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
-import { Flight } from "../models/flight.model";
-import { HistoryEntry } from "../models/history-entry.model";
-import { MapSettings } from "../models/settings.model";
-import { computed, inject, signal } from "@angular/core";
-import { NotificationService } from "../services/notification.service";
-import { ApiService } from "../services/api.service";
-import { NotificationType } from "../models/notification-type";
-import { messages } from "../constants/messages";
-import { defaultSettings, SettingsService } from "../services/settings.service";
-import { DepartureListItem } from "../models/departure-list-item.model";
-import { SearchResultItem } from "../models/search-result-item.model";
-import { MapTarget } from "../models/map-target.model";
-import { FlightStatus } from "../models/flight-status";
-import { GliderType } from "../models/glider-type";
-import { AircraftType } from "../models/aircraft-type";
-
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { Flight } from '../models/flight.model';
+import { HistoryEntry } from '../models/history-entry.model';
+import { MapSettings } from '../models/settings.model';
+import { computed, inject, signal } from '@angular/core';
+import { NotificationService } from '../services/notification.service';
+import { ApiService } from '../services/api.service';
+import { NotificationType } from '../models/notification-type';
+import { messages } from '../constants/messages';
+import { defaultSettings, SettingsService } from '../services/settings.service';
+import { DepartureListItem } from '../models/departure-list-item.model';
+import { SearchResultItem } from '../models/search-result-item.model';
+import { MapTarget } from '../models/map-target.model';
+import { FlightStatus } from '../models/flight-status';
+import { GliderType } from '../models/glider-type';
+import { AircraftType } from '../models/aircraft-type';
 
 type OgnState = {
   flights: Flight[];
@@ -26,7 +25,7 @@ type OgnState = {
   searchText: string;
   searchResult: SearchResultItem[];
   mapTarget: MapTarget | null;
-  historicFlightTarget: { flarmId: string, start?: string, end?: string } | null;
+  historicFlightTarget: { flarmId: string; start?: string; end?: string } | null;
 };
 
 const initialState: OgnState = {
@@ -39,13 +38,13 @@ const initialState: OgnState = {
   searchText: '',
   searchResult: [],
   mapTarget: null,
-  historicFlightTarget: null
+  historicFlightTarget: null,
 };
 
 export const OgnStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods(state => {
+  withMethods((state) => {
     const apiService = inject(ApiService);
     const settingsService = inject(SettingsService);
     const notificationService = inject(NotificationService);
@@ -62,13 +61,19 @@ export const OgnStore = signalStore(
       ) => {
         try {
           const flights = await apiService.getFlights(
-            maxLat, minLat, maxLng, minLng,
-            selectedFlarmId, glidersOnly, clubGlidersOnly
+            maxLat,
+            minLat,
+            maxLng,
+            minLng,
+            selectedFlarmId,
+            glidersOnly,
+            clubGlidersOnly,
           );
 
           const selected = state.selectedAircraftFlightData();
-          const updatedSeletedFlight = flights.find(f => f.flarmId === selectedFlarmId);
-          const hasChanged = updatedSeletedFlight && updatedSeletedFlight.timestamp !== selected?.timestamp;
+          const updatedSeletedFlight = flights.find((f) => f.flarmId === selectedFlarmId);
+          const hasChanged =
+            updatedSeletedFlight && updatedSeletedFlight.timestamp !== selected?.timestamp;
 
           const flightHistory = state.flightHistory();
           let updatedHistory = [...flightHistory];
@@ -84,62 +89,68 @@ export const OgnStore = signalStore(
             });
           }
 
-          patchState(state, current => ({
+          patchState(state, (current) => ({
             ...current,
             flights,
           }));
           // Do not update flight path and flight data if historicFlightTarget is set
           if (hasChanged && !state.historicFlightTarget()) {
-            patchState(state, current => ({
+            patchState(state, (current) => ({
               ...current,
               flightHistory: updatedSeletedFlight ? updatedHistory : current.flightHistory,
-              selectedAircraftFlightData: updatedSeletedFlight || current.selectedAircraftFlightData,
+              selectedAircraftFlightData:
+                updatedSeletedFlight || current.selectedAircraftFlightData,
             }));
-          };
+          }
         } catch (error) {
           console.log(error);
           notificationService.notify({
             message: messages.defaultNetworkError,
-            type: NotificationType.Error
+            type: NotificationType.Error,
           });
         }
       },
 
-      loadFlightHistory: async (flarmId: string, startTimestamp?: string, endTimestamp?: string) => {
+      loadFlightHistory: async (
+        flarmId: string,
+        startTimestamp?: string,
+        endTimestamp?: string,
+      ) => {
         try {
           const history = await apiService.getFlightHistory(flarmId, startTimestamp, endTimestamp);
-          patchState(state, current => ({
+          patchState(state, (current) => ({
             ...current,
-            flightHistory: history
+            flightHistory: history,
           }));
         } catch (error) {
           notificationService.notify({
             message: messages.defaultNetworkError,
-            type: NotificationType.Error
+            type: NotificationType.Error,
           });
         }
       },
 
       selectAircraft: (flarmId: string | null) => {
         if (flarmId) {
-          patchState(state, current => ({
+          patchState(state, (current) => ({
             ...current,
             selectedAircraft: flarmId,
           }));
-        }
-        else {
-          patchState(state, current => ({
+        } else {
+          patchState(state, (current) => ({
             ...current,
             selectedAircraft: initialState.selectedAircraft,
-            selectedAircraftFlightData: state.historicFlightTarget() ? state.selectedAircraftFlightData() : initialState.selectedAircraftFlightData,
-            flightHistory: initialState.flightHistory
+            selectedAircraftFlightData: state.historicFlightTarget()
+              ? state.selectedAircraftFlightData()
+              : initialState.selectedAircraftFlightData,
+            flightHistory: initialState.flightHistory,
           }));
         }
       },
 
       setSelectedAircraftFlightData: (flightData: Flight | null) => {
         if (flightData) {
-          patchState(state, current => ({
+          patchState(state, (current) => ({
             ...current,
             selectedAircraftFlightData: flightData,
           }));
@@ -148,31 +159,34 @@ export const OgnStore = signalStore(
 
       saveSettings: (settings: MapSettings) => {
         settingsService.saveSettings(settings);
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
-          settings
+          settings,
         }));
       },
 
       loadSettings: () => {
         const loaded = settingsService.loadSettings();
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
-          settings: loaded
+          settings: loaded,
         }));
       },
 
       loadDepartureList: async (knownGlidersOnly: boolean) => {
         try {
-          const departureList = await apiService.getDepartureList(knownGlidersOnly, state.settings().useNewDepartureList);
-          patchState(state, current => ({
+          const departureList = await apiService.getDepartureList(
+            knownGlidersOnly,
+            state.settings().useNewDepartureList,
+          );
+          patchState(state, (current) => ({
             ...current,
-            departureList
+            departureList,
           }));
         } catch (error) {
           notificationService.notify({
             message: messages.defaultNetworkError,
-            type: NotificationType.Error
+            type: NotificationType.Error,
           });
         }
       },
@@ -180,31 +194,31 @@ export const OgnStore = signalStore(
       searchAircraft: async (searchText: string) => {
         try {
           const searchResult = await apiService.searchAircraft(searchText);
-          patchState(state, current => ({
+          patchState(state, (current) => ({
             ...current,
             searchText,
-            searchResult
+            searchResult,
           }));
         } catch (error) {
           notificationService.notify({
             message: messages.defaultNetworkError,
-            type: NotificationType.Error
+            type: NotificationType.Error,
           });
         }
       },
 
       clearSearchResult: () => {
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
           searchText: initialState.searchText,
-          searchResult: initialState.searchResult
+          searchResult: initialState.searchResult,
         }));
       },
 
       setMapTarget(flarmId: string, lat: number, lng: number, flightStatus: FlightStatus): void {
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
-          mapTarget: { flarmId, lat, lng, flightStatus }
+          mapTarget: { flarmId, lat, lng, flightStatus },
         }));
       },
 
@@ -213,38 +227,38 @@ export const OgnStore = signalStore(
           const searchResult = await apiService.searchAircraft(flarmId);
           if (searchResult && searchResult.length > 0) {
             var aircraft = searchResult[0];
-            patchState(state, current => ({
+            patchState(state, (current) => ({
               ...current,
               mapTarget: {
                 flarmId: aircraft.flarmId,
                 lat: aircraft.latitude,
                 lng: aircraft.longitude,
-                flightStatus: aircraft.flightStatus
-              }
+                flightStatus: aircraft.flightStatus,
+              },
             }));
           }
         } catch (error) {
           notificationService.notify({
             message: messages.defaultNetworkError,
-            type: NotificationType.Error
+            type: NotificationType.Error,
           });
         }
       },
 
       clearMapTarget(): void {
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
-          mapTarget: initialState.mapTarget
+          mapTarget: initialState.mapTarget,
         }));
       },
 
       setHistoricFlightTarget(departureListItem: DepartureListItem): void {
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
           historicFlightTarget: {
             flarmId: departureListItem.flarmId,
             start: departureListItem.departureTimestamp,
-            end: departureListItem.landingTimestamp
+            end: departureListItem.landingTimestamp,
           },
           selectedAircraftFlightData: {
             flarmId: departureListItem.flarmId,
@@ -260,18 +274,18 @@ export const OgnStore = signalStore(
             timestamp: '',
             speed: 0,
             vario: 0,
-            varioAverage: 0
-          }
+            varioAverage: 0,
+          },
         }));
       },
 
       clearHistoricFlightTarget(): void {
-        patchState(state, current => ({
+        patchState(state, (current) => ({
           ...current,
           historicFlightTarget: initialState.historicFlightTarget,
-          selectedAircraftFlightData: initialState.selectedAircraftFlightData
+          selectedAircraftFlightData: initialState.selectedAircraftFlightData,
         }));
       },
     };
-  })
+  }),
 );

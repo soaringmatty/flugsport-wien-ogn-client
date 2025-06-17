@@ -1,4 +1,4 @@
-import { LaunchType } from "./launch-type";
+import { LaunchType } from './launch-type';
 
 export interface DepartureListItem {
   flarmId: string;

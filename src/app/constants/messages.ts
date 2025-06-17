@@ -1,3 +1,3 @@
 export const messages = {
-    defaultNetworkError: 'Keine Verbindung zum Server',
-}
+  defaultNetworkError: 'Keine Verbindung zum Server',
+};

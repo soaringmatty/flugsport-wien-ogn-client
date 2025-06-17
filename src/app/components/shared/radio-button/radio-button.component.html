@@ -16,22 +16,29 @@
   <span class="text-sm text-gray-900">{{ label() }}</span>
 </label> -->
 
-
-<label class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 transition relative"
-  [ngClass]="{ 'bg-blue-50 border-blue-600': value(), 'border-gray-200': !value() }">
+<label
+  class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 transition relative"
+  [ngClass]="{ 'bg-blue-50 border-blue-600': value(), 'border-gray-200': !value() }"
+>
   <!-- Radio-Kontrollpunkt -->
   <span class="relative w-5 h-5 flex items-center justify-center shrink-0">
     <!-- Outer circle -->
-    <span class="absolute w-full h-full rounded-full border-2 transition-colors duration-200" [ngClass]="{
+    <span
+      class="absolute w-full h-full rounded-full border-2 transition-colors duration-200"
+      [ngClass]="{
         'border-blue-600': value(),
-        'border-gray-400': !value()
-      }"></span>
+        'border-gray-400': !value(),
+      }"
+    ></span>
 
     <!-- Inner dot (absolut positioniert, layout-neutral) -->
-    <span class="absolute w-2.5 h-2.5 rounded-full bg-blue-600 transition duration-200 pointer-events-none" [ngClass]="{
+    <span
+      class="absolute w-2.5 h-2.5 rounded-full bg-blue-600 transition duration-200 pointer-events-none"
+      [ngClass]="{
         'opacity-100 scale-100': value(),
-        'opacity-0 scale-50': !value()
-      }"></span>
+        'opacity-0 scale-50': !value(),
+      }"
+    ></span>
   </span>
 
   <!-- Hidden Input -->
@@ -40,9 +47,6 @@
   <!-- Label -->
   <span class="text-sm text-gray-900">{{ label() }}</span>
 </label>
-
-
-
 
 <!-- <label class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-300 bg-white">
   <input type="radio" [name]="group()" class="accent-blue-600 w-5 h-5" [checked]="value()" (change)="toggle()" />

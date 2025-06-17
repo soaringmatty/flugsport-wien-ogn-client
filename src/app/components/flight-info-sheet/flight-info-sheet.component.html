@@ -24,9 +24,11 @@
 
     <!-- Vario -->
     <div class="flex flex-col items-center">
-      <span class="material-symbols-outlined text-gray-700 text-xl">{{varioIcon()}}</span>
-      <span class="font-medium text-sm"
-        [ngClass]="{ 'text-green-600': aircraft.vario > 0, 'text-red-600': aircraft.vario < 0 }">
+      <span class="material-symbols-outlined text-gray-700 text-xl">{{ varioIcon() }}</span>
+      <span
+        class="font-medium text-sm"
+        [ngClass]="{ 'text-green-600': aircraft.vario > 0, 'text-red-600': aircraft.vario < 0 }"
+      >
         {{ aircraft.vario > 0 ? '+' : '' }}{{ aircraft.vario }} m/s
       </span>
       <span class="text-xs text-gray-500">Vario</span>
@@ -34,9 +36,14 @@
 
     <!-- Vario 60s -->
     <div class="flex flex-col items-center">
-      <span class="material-symbols-outlined text-gray-700 text-xl">{{varioAverageIcon()}}</span>
-      <span class="font-medium text-sm"
-        [ngClass]="{ 'text-green-600': aircraft.varioAverage > 0, 'text-red-600': aircraft.varioAverage < 0 }">
+      <span class="material-symbols-outlined text-gray-700 text-xl">{{ varioAverageIcon() }}</span>
+      <span
+        class="font-medium text-sm"
+        [ngClass]="{
+          'text-green-600': aircraft.varioAverage > 0,
+          'text-red-600': aircraft.varioAverage < 0,
+        }"
+      >
         {{ aircraft.varioAverage > 0 ? '+' : '' }}{{ aircraft.varioAverage }} m/s
       </span>
       <span class="text-xs text-gray-500">Vario (60s Ø)</span>

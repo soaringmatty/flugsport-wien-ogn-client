@@ -1,3 +1,3 @@
 export const environment = {
-    api: 'https://api-test.flugsportwienogn.com/'
+  api: 'https://api-test.flugsportwienogn.com/',
 };

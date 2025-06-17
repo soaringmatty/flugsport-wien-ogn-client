@@ -1,5 +1,4 @@
 <div class="p-4 flex flex-col gap-4 bg-gray-50 text-gray-900">
-
   <!-- SECTION: Kartentyp -->
   <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3">
     <div class="flex items-center gap-2">
@@ -9,31 +8,43 @@
 
     <div class="grid grid-cols-2 gap-4">
       <!-- OSM -->
-      <button type="button" class="rounded-xl overflow-hidden transition focus:outline-none" [ngClass]="{
+      <button
+        type="button"
+        class="rounded-xl overflow-hidden transition focus:outline-none"
+        [ngClass]="{
           'ring-2 ring-blue-600': settings().mapType === MapType.osm,
-          'ring-1 ring-gray-300': settings().mapType !== MapType.osm
-        }" (click)="setMapType(MapType.osm)">
+          'ring-1 ring-gray-300': settings().mapType !== MapType.osm,
+        }"
+        (click)="setMapType(MapType.osm)"
+      >
         <div class="aspect-video overflow-hidden">
-          <img src="assets/maps/osm.png" alt="OpenStreetMap"
-            class="object-cover w-full h-full transition group-hover:scale-105">
+          <img
+            src="assets/maps/osm.png"
+            alt="OpenStreetMap"
+            class="object-cover w-full h-full transition group-hover:scale-105"
+          />
         </div>
-        <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">
-          Open Steet Map
-        </div>
+        <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">Open Steet Map</div>
       </button>
 
       <!-- Stamen -->
-      <button type="button" class="rounded-xl overflow-hidden transition focus:outline-none" [ngClass]="{
+      <button
+        type="button"
+        class="rounded-xl overflow-hidden transition focus:outline-none"
+        [ngClass]="{
           'ring-2 ring-blue-600': settings().mapType === MapType.stamen,
-          'ring-1 ring-gray-300': settings().mapType !== MapType.stamen
-        }" (click)="setMapType(MapType.stamen)">
+          'ring-1 ring-gray-300': settings().mapType !== MapType.stamen,
+        }"
+        (click)="setMapType(MapType.stamen)"
+      >
         <div class="aspect-video overflow-hidden">
-          <img src="assets/maps/stamen.png" alt="Stamen Gelände"
-            class="object-cover w-full h-full transition group-hover:scale-105">
+          <img
+            src="assets/maps/stamen.png"
+            alt="Stamen Gelände"
+            class="object-cover w-full h-full transition group-hover:scale-105"
+          />
         </div>
-        <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">
-          Stamen (Gelände)
-        </div>
+        <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">Stamen (Gelände)</div>
       </button>
     </div>
   </div>
@@ -44,12 +55,22 @@
       <h2 class="text-base font-semibold">Flugzeugfilter</h2>
     </div>
     <div class="flex flex-col gap-2">
-      <app-radio-button *ngFor="let filter of gliderFilters" [label]="filter.label" group="gliderFilter"
-        [value]="settings().gliderFilterOnMap === filter.value" (change)="onAircraftFilterChange(filter.value)" />
+      <app-radio-button
+        *ngFor="let filter of gliderFilters"
+        [label]="filter.label"
+        group="gliderFilter"
+        [value]="settings().gliderFilterOnMap === filter.value"
+        (change)="onAircraftFilterChange(filter.value)"
+      />
     </div>
-    <div *ngIf="settings().gliderFilterOnMap === GliderFilter.custom" class="grid grid-cols-2 gap-2">
-      <label *ngFor="let type of customTypes"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-blue-50 transition">
+    <div
+      *ngIf="settings().gliderFilterOnMap === GliderFilter.custom"
+      class="grid grid-cols-2 gap-2"
+    >
+      <label
+        *ngFor="let type of customTypes"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-blue-50 transition"
+      >
         <input type="checkbox" class="accent-blue-600 w-4 h-4" />
         <span class="text-sm">{{ type }}</span>
       </label>
@@ -81,8 +102,13 @@
       <h2 class="text-base font-semibold">Marker-Farbschema</h2>
     </div>
     <div class="flex flex-col gap-2">
-      <app-radio-button *ngFor="let scheme of markerColorSchemes" [label]="scheme.label" group="markerColorScheme"
-        [value]="settings().markerColorScheme === scheme.value" (change)="onMarkerColorSchemeChange(scheme.value)" />
+      <app-radio-button
+        *ngFor="let scheme of markerColorSchemes"
+        [label]="scheme.label"
+        group="markerColorScheme"
+        [value]="settings().markerColorScheme === scheme.value"
+        (change)="onMarkerColorSchemeChange(scheme.value)"
+      />
     </div>
   </div>
 

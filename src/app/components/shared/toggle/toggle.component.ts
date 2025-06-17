@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, input, model, output } from '@angul
   templateUrl: './toggle.component.html',
   styleUrl: './toggle.component.scss',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToggleComponent {
   label = input('');
@@ -14,7 +14,7 @@ export class ToggleComponent {
   change = output<boolean>();
 
   toggle(): void {
-    this.value.set(!this.value())
+    this.value.set(!this.value());
     this.change.emit(this.value());
   }
 }

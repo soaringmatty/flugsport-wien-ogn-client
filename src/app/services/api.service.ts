@@ -8,7 +8,7 @@ import { DepartureListItem } from '../models/departure-list-item.model';
 import { SearchResultItem } from '../models/search-result-item.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private readonly http = inject(HttpClient);
@@ -20,7 +20,7 @@ export class ApiService {
     minLng: number,
     selectedFlarmId?: string,
     glidersOnly?: boolean,
-    clubGlidersOnly?: boolean
+    clubGlidersOnly?: boolean,
   ): Promise<Flight[]> {
     let params = new HttpParams()
       .set('maxLat', maxLat.toString())
@@ -38,12 +38,14 @@ export class ApiService {
       params = params.set('clubGlidersOnly', clubGlidersOnly.toString());
     }
 
-    return await firstValueFrom(
-      this.http.get<Flight[]>(api.getFlights, { params })
-    );
+    return await firstValueFrom(this.http.get<Flight[]>(api.getFlights, { params }));
   }
 
-  async getFlightHistory(flarmId: string, startTimestamp?: string, endTimestamp?: string): Promise<HistoryEntry[]> {
+  async getFlightHistory(
+    flarmId: string,
+    startTimestamp?: string,
+    endTimestamp?: string,
+  ): Promise<HistoryEntry[]> {
     const url = api.getFlightHistory.replace('{id}', flarmId);
     let params = new HttpParams();
     if (startTimestamp) {
@@ -69,9 +71,12 @@ export class ApiService {
     return response;
   }
 
-  async getDepartureList(knownGlidersOnly: boolean, useNewDepartureList: boolean): Promise<DepartureListItem[]> {
+  async getDepartureList(
+    knownGlidersOnly: boolean,
+    useNewDepartureList: boolean,
+  ): Promise<DepartureListItem[]> {
     const apiUrl = useNewDepartureList ? api.getDepartureList : api.getDepartureListGlidernet;
-    const url = apiUrl.replace('{0}', knownGlidersOnly.toString())
+    const url = apiUrl.replace('{0}', knownGlidersOnly.toString());
     const request = this.http.get<DepartureListItem[]>(url);
     return await firstValueFrom(request);
   }
@@ -79,7 +84,7 @@ export class ApiService {
   async searchAircraft(searchText: string): Promise<SearchResultItem[]> {
     const url = api.searchAircraft.replace('{0}', searchText);
     const params = new HttpParams().append('take', 21); // 21 so that we know if there are more elements because UI only renders 20
-    const request = this.http.get<SearchResultItem[]>(url, {params});
+    const request = this.http.get<SearchResultItem[]>(url, { params });
     return await firstValueFrom(request);
   }
 }

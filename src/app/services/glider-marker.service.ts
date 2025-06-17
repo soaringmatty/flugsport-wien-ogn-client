@@ -16,20 +16,32 @@ export class GliderMarkerService {
   private markerCache = new Map<string, HTMLCanvasElement>();
 
   readonly flightPathStrokeStyle = new Style({
-    stroke: new Stroke({ color: flightPathStrokeWhite, width: 6 })
+    stroke: new Stroke({ color: flightPathStrokeWhite, width: 6 }),
   });
 
   readonly flightPathStyle = new Style({
-    stroke: new Stroke({ color: flightPathDarkRed, width: 2 })
+    stroke: new Stroke({ color: flightPathDarkRed, width: 2 }),
   });
 
-  async getGliderMarkerStyle(flight: Flight, settings: MapSettings, isSelected: boolean = false): Promise<Style> {
+  async getGliderMarkerStyle(
+    flight: Flight,
+    settings: MapSettings,
+    isSelected: boolean = false,
+  ): Promise<Style> {
     const { displayName, type, aircraftType, heightMSL, timestamp } = flight;
     const markerKey = `${displayName}-${isSelected}-${settings.markerColorScheme}-${type}-${aircraftType}-${heightMSL}`;
 
     let canvas = this.markerCache.get(markerKey);
     if (!canvas) {
-      canvas = await this.createLabelledGliderMarker(displayName, settings, isSelected, type, aircraftType, heightMSL, timestamp);
+      canvas = await this.createLabelledGliderMarker(
+        displayName,
+        settings,
+        isSelected,
+        type,
+        aircraftType,
+        heightMSL,
+        timestamp,
+      );
       this.markerCache.set(markerKey, canvas);
     }
 
@@ -41,7 +53,7 @@ export class GliderMarkerService {
         scale: 0.38,
         img: canvas,
         //imgSize: [88, 88],
-      })
+      }),
     });
   }
 
@@ -57,7 +69,8 @@ export class GliderMarkerService {
     const sortByPriority = (a: Flight, b: Flight): number => {
       // 1. Nach GliderType
       const typePriority = (flight: Flight): number => {
-        if (flight.type === GliderType.club && flight.aircraftType === AircraftType.glider) return 1;
+        if (flight.type === GliderType.club && flight.aircraftType === AircraftType.glider)
+          return 1;
         if (flight.type === GliderType.club) return 2;
         if (flight.type === GliderType.private) return 3;
         return 4;
@@ -88,28 +101,38 @@ export class GliderMarkerService {
     isSelected: boolean,
     gliderType: GliderType,
     aircraftType: AircraftType,
-    altitude: number
+    altitude: number,
   ): { imageSrc: string; textColor: string } {
     if (isSelected) {
       return { imageSrc: 'assets/marker_white.png', textColor: 'black' };
     }
 
     if (settings.markerColorScheme === MarkerColorScheme.highlightKnownGliders) {
-      if (gliderType === GliderType.foreign) return { imageSrc: 'assets/marker_grey.png', textColor: 'white' };
-      if (gliderType === GliderType.private) return { imageSrc: 'assets/marker_beige.png', textColor: 'black' };
-      if (gliderType === GliderType.club && [AircraftType.towplane, AircraftType.motorplane].includes(aircraftType)) {
+      if (gliderType === GliderType.foreign)
+        return { imageSrc: 'assets/marker_grey.png', textColor: 'white' };
+      if (gliderType === GliderType.private)
+        return { imageSrc: 'assets/marker_beige.png', textColor: 'black' };
+      if (
+        gliderType === GliderType.club &&
+        [AircraftType.towplane, AircraftType.motorplane].includes(aircraftType)
+      ) {
         return { imageSrc: 'assets/marker_red.png', textColor: 'white' };
       }
     }
 
     if (settings.markerColorScheme === MarkerColorScheme.aircraftType) {
       switch (aircraftType) {
-        case AircraftType.glider: return { imageSrc: 'assets/marker_beige.png', textColor: 'black' };
+        case AircraftType.glider:
+          return { imageSrc: 'assets/marker_beige.png', textColor: 'black' };
         case AircraftType.towplane:
-        case AircraftType.motorplane: return { imageSrc: 'assets/marker_blue.png', textColor: 'white' };
-        case AircraftType.hangOrParaglider: return { imageSrc: 'assets/marker_red.png', textColor: 'white' };
-        case AircraftType.helicopter: return { imageSrc: 'assets/marker_green.png', textColor: 'white' };
-        case AircraftType.unknown: return { imageSrc: 'assets/marker_grey.png', textColor: 'white' };
+        case AircraftType.motorplane:
+          return { imageSrc: 'assets/marker_blue.png', textColor: 'white' };
+        case AircraftType.hangOrParaglider:
+          return { imageSrc: 'assets/marker_red.png', textColor: 'white' };
+        case AircraftType.helicopter:
+          return { imageSrc: 'assets/marker_green.png', textColor: 'white' };
+        case AircraftType.unknown:
+          return { imageSrc: 'assets/marker_grey.png', textColor: 'white' };
       }
     }
 
@@ -146,7 +169,13 @@ export class GliderMarkerService {
     altitude: number,
     lastUpdateTimestamp: string,
   ): Promise<HTMLCanvasElement> {
-    const { imageSrc, textColor } = this.resolveMarkerAppearance(settings, isSelected, gliderType, aircraftType, altitude);
+    const { imageSrc, textColor } = this.resolveMarkerAppearance(
+      settings,
+      isSelected,
+      gliderType,
+      aircraftType,
+      altitude,
+    );
     const image = await this.loadImage(imageSrc);
 
     const canvas = document.createElement('canvas');

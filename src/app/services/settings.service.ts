@@ -19,15 +19,15 @@ export const defaultSettings: MapSettings = {
   markerColorScheme: MarkerColorScheme.highlightKnownGliders,
   useUtcTimeInDepartureList: true,
   reduceDataUsage: false,
-  useNewDepartureList: false
-}
+  useNewDepartureList: false,
+};
 
 export function getRefreshTimeout(reduceDataUsage: boolean): number {
   return reduceDataUsage ? 10000 : 5000;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SettingsService {
   private readonly settingsKey = 'ogn_config';

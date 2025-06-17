@@ -1,4 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, effect, inject, OnInit, Signal, signal, untracked, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  Signal,
+  signal,
+  untracked,
+  ViewChild,
+} from '@angular/core';
 import { Flight } from '../../models/flight.model';
 import { MapSettings } from '../../models/settings.model';
 import { GliderMarkerProperties } from '../../models/glider-marker-properties.model';
@@ -32,14 +44,14 @@ import { FlightInfoSheetComponent } from '../flight-info-sheet/flight-info-sheet
 import { NgClass } from '@angular/common';
 import { MapType } from '../../models/map-type';
 import { FlightStatus } from '../../models/flight-status';
-import { DetailViewMobileComponent } from "../detail-view-mobile/detail-view-mobile.component";
+import { DetailViewMobileComponent } from '../detail-view-mobile/detail-view-mobile.component';
 
 @Component({
   selector: 'app-map',
   imports: [RouterLink, DetailViewMobileComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapComponent implements OnInit, AfterViewInit {
   // Dependencies (via inject)
@@ -126,14 +138,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.initializeMap();
     this.initiallyLoadData();
 
-    this.route.queryParamMap
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
-        const flarmId = params.get('flarmId');
-        if (flarmId && this.selectedAircraft() !== flarmId) {
-          this.store.loadAndSetMapTarget(flarmId);
-        }
-      });
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const flarmId = params.get('flarmId');
+      if (flarmId && this.selectedAircraft() !== flarmId) {
+        this.store.loadAndSetMapTarget(flarmId);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -147,7 +157,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   openSearchPage(): void {
-    this.router.navigate(['./search'])
+    this.router.navigate(['./search']);
   }
 
   private showFlarmIdOnMap(flarmId: string, lng: number, lat: number, flightStatus: FlightStatus) {
@@ -156,17 +166,17 @@ export class MapComponent implements OnInit, AfterViewInit {
     switch (flightStatus) {
       case FlightStatus.Flying:
       case FlightStatus.FlyingSignalLost:
-        mapZoom = 11
+        mapZoom = 11;
         break;
       default:
-        mapZoom = 13
+        mapZoom = 13;
         break;
     }
     this.map.getView().setCenter(coordinate);
     this.map.getView().setZoom(mapZoom);
     untracked(() => {
       this.unselectGlider();
-      this.selectGlider(flarmId)
+      this.selectGlider(flarmId);
     });
   }
 
@@ -184,7 +194,11 @@ export class MapComponent implements OnInit, AfterViewInit {
       extent[3] + height * paddingFactor,
     ];
 
-    const [minLng, minLat, maxLng, maxLat] = transformExtent(paddedExtent, 'EPSG:3857', 'EPSG:4326');
+    const [minLng, minLat, maxLng, maxLat] = transformExtent(
+      paddedExtent,
+      'EPSG:3857',
+      'EPSG:4326',
+    );
     this.store.loadFlights(
       maxLat,
       minLat,
@@ -192,7 +206,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       minLng,
       this.selectedAircraft() as string,
       settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
-      settings.gliderFilterOnMap === GliderFilter.clubAndprivate
+      settings.gliderFilterOnMap === GliderFilter.clubAndprivate,
     );
   }
 
@@ -223,17 +237,14 @@ export class MapComponent implements OnInit, AfterViewInit {
       const deltaY = markerY - desiredY;
 
       const currentCenterPixel = this.map.getPixelFromCoordinate(view.getCenter()!);
-      const desiredCenterPixel: [number, number] = [
-        markerX,
-        currentCenterPixel[1] + deltaY
-      ];
+      const desiredCenterPixel: [number, number] = [markerX, currentCenterPixel[1] + deltaY];
 
       const newCenter = this.map.getCoordinateFromPixel(desiredCenterPixel);
       if (newCenter) {
         view.animate({
           center: newCenter,
           duration: 400,
-          easing: (t) => t * (2 - t)
+          easing: (t) => t * (2 - t),
         });
       }
     }
@@ -282,7 +293,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       ],
       view,
       controls: defaultControls({
-        zoom: false
+        zoom: false,
       }),
     });
 
@@ -323,7 +334,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       relativeTo: this.route,
       queryParams: { flarmId },
       queryParamsHandling: 'merge',
-      replaceUrl: true
+      replaceUrl: true,
     });
     const flightData = this.flights().find((x) => x.flarmId === flarmId);
     if (flightData) {
@@ -335,9 +346,8 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.updateSingleMarkerOnMap(flightData);
 
       this.centerMapIfMarkerIsCovered(flightData);
-    }
-    else {
-      this.loadFlightsWithFilter(this.settings())
+    } else {
+      this.loadFlightsWithFilter(this.settings());
     }
     this.store.loadFlightHistory(flarmId);
   }
@@ -348,7 +358,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       return;
     }
     this.store.selectAircraft(null);
-    this.updateSingleMarkerOnMap(this.selectedAircraftFlightData() as Flight)
+    this.updateSingleMarkerOnMap(this.selectedAircraftFlightData() as Flight);
     this.flightPathStrokeLayer.getSource()?.clear();
     this.flightPathLayer.getSource()?.clear();
     this.flightPathMarkerLayer.getSource()?.clear();
@@ -416,17 +426,16 @@ export class MapComponent implements OnInit, AfterViewInit {
   private fitMapToFlightPath(history: HistoryEntry[]): void {
     if (!history || history.length === 0) return;
     const coordinates = history
-      .filter(h => h.latitude && h.longitude)
-      .map(h => fromLonLat([h.longitude, h.latitude]));
+      .filter((h) => h.latitude && h.longitude)
+      .map((h) => fromLonLat([h.longitude, h.latitude]));
     if (coordinates.length < 1) return;
 
     const extent = new LineString(coordinates).getExtent();
     this.map.getView().fit(extent, {
       padding: [30, 30, 230, 30], // 230 is bottom padding for mobile view
-      maxZoom: 13
+      maxZoom: 13,
     });
   }
-
 
   private drawFlightPathFromHistory(historyEntries: HistoryEntry[]) {
     const settings = this.settings();
@@ -438,7 +447,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const coords = entries.map(e => fromLonLat([e.longitude, e.latitude]));
+    const coords = entries.map((e) => fromLonLat([e.longitude, e.latitude]));
     let geometry = new LineString(coords);
 
     if (settings.useFlightPathSmoothing) {
@@ -481,7 +490,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     const iconStyle = await this.gliderMarkerService.getGliderMarkerStyle(
       flight,
       this.settings(),
-      isSelected
+      isSelected,
     );
 
     if (zIndex) {
@@ -493,7 +502,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       existingFeature.setStyle(iconStyle);
     } else {
       const feature = new Feature({
-        geometry: new Point(fromLonLat([flight.longitude, flight.latitude]))
+        geometry: new Point(fromLonLat([flight.longitude, flight.latitude])),
       });
       feature.setId(flight.flarmId);
       feature.setStyle(iconStyle);
@@ -503,19 +512,17 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.markerDictionary.set(flight.flarmId, {
       isSelected,
       opacity: this.gliderMarkerService.getMarkerOpacity(flight.timestamp, isSelected),
-      altitudeLayer: Math.floor(flight.heightMSL / 250)
+      altitudeLayer: Math.floor(flight.heightMSL / 250),
     });
   }
-
-
 
   private removeObsoleteGliderMarkers(flights: Flight[]) {
     const allLayers = [this.clubGlidersLayer, this.privateGlidersLayer, this.foreignGlidersLayer];
     for (const layer of allLayers) {
       const source = layer.getSource();
-      source?.getFeatures().forEach(f => {
+      source?.getFeatures().forEach((f) => {
         const id = f.getId();
-        if (id && !flights.find(flight => flight.flarmId === id)) {
+        if (id && !flights.find((flight) => flight.flarmId === id)) {
           source.removeFeature(f);
         }
       });
@@ -532,4 +539,4 @@ export class MapComponent implements OnInit, AfterViewInit {
         return this.foreignGlidersLayer;
     }
   }
-}   
+}

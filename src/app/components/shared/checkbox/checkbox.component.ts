@@ -4,11 +4,9 @@ import { ChangeDetectionStrategy, Component, input, Input, signal } from '@angul
   selector: 'app-checkbox',
   imports: [],
   templateUrl: './checkbox.component.html',
-  styleUrl: './checkbox.component.scss'
+  styleUrl: './checkbox.component.scss',
 })
-export class CheckboxComponent {
-
-}
+export class CheckboxComponent {}
 
 @Component({
   selector: 'app-checkbox',
@@ -18,7 +16,7 @@ export class CheckboxComponent {
 })
 export class AppCheckboxComponent {
   label = input('');
-  
+
   @Input({ required: true }) checked = signal(false);
   @Input() onChange: (event: Event) => void = () => {};
 

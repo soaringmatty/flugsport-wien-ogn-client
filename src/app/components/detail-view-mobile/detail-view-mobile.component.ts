@@ -1,7 +1,16 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  output,
+  signal,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+} from '@angular/core';
 import { FlightInfoSheetComponent } from '../flight-info-sheet/flight-info-sheet.component';
 import { CommonModule } from '@angular/common';
-import { BarogramComponent } from "../barogram/barogram.component";
+import { BarogramComponent } from '../barogram/barogram.component';
 import { Flight } from '../../models/flight.model';
 import { Subscription, timer } from 'rxjs';
 import { getTimeAgoString } from '../../utils/time.utils';
@@ -22,7 +31,7 @@ register();
 export class DetailViewMobileComponent {
   private readonly store = inject(OgnStore);
 
-  flight = input<Flight>()
+  flight = input<Flight>();
   close = output<void>();
   activePage = signal(0);
   totalPages = 2;
@@ -65,15 +74,15 @@ export class DetailViewMobileComponent {
 
   onSwipeLeft() {
     if (this.activePage() < this.totalPages - 1) {
-      this.activePage.update(i => i + 1);
+      this.activePage.update((i) => i + 1);
     }
   }
 
   onSwipeRight() {
     if (this.activePage() > 0) {
-      this.activePage.update(i => i - 1);
+      this.activePage.update((i) => i - 1);
     }
   }
 
-  getTimeAgoString = getTimeAgoString
+  getTimeAgoString = getTimeAgoString;
 }

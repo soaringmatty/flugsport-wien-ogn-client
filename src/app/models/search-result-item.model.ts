@@ -1,4 +1,4 @@
-import { FlightStatus } from "./flight-status";
+import { FlightStatus } from './flight-status';
 
 export interface SearchResultItem {
   flarmId: string;

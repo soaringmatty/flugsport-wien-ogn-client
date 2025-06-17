@@ -1,8 +1,8 @@
-import { FlightStatus } from "./flight-status";
+import { FlightStatus } from './flight-status';
 
-export interface MapTarget { 
-    flarmId: string,
-    lat: number,
-    lng: number,
-    flightStatus: FlightStatus
+export interface MapTarget {
+  flarmId: string;
+  lat: number;
+  lng: number;
+  flightStatus: FlightStatus;
 }

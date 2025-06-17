@@ -1,4 +1,4 @@
-import { GliderType } from "./glider-type";
+import { GliderType } from './glider-type';
 
 export interface GliderMarkerProperties {
   isSelected: boolean;

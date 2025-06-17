@@ -1,7 +1,7 @@
 export enum GliderFilter {
-    club = 0,
-    clubAndprivate = 1,
-    allGliders = 2,
-    allAirplanes = 3,
-    custom = 4
+  club = 0,
+  clubAndprivate = 1,
+  allGliders = 2,
+  allAirplanes = 3,
+  custom = 4,
 }

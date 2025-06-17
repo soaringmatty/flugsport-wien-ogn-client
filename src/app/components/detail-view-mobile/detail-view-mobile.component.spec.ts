@@ -8,9 +8,8 @@ describe('DetailViewMobileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailViewMobileComponent]
-    })
-    .compileComponents();
+      imports: [DetailViewMobileComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DetailViewMobileComponent);
     component = fixture.componentInstance;
