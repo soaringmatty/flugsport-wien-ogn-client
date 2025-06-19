@@ -57,6 +57,18 @@ export class GliderMarkerService {
     });
   }
 
+  getFlightPathPositionMarkerStyle(rotation: number): Style {
+    return new Style({
+      image: new Icon({
+        anchor: [0.5, 0.5],
+        src: 'assets/glider.png',
+        rotateWithView: false,
+        rotation: rotation * (Math.PI / 180),
+        scale: 0.1,
+      }),
+    });
+  }
+
   getMarkerOpacity(lastUpdateTimestamp: string, isSelected: boolean): number {
     const minutes = (Date.now() - new Date(lastUpdateTimestamp).getTime()) / 60000;
     if (minutes > 20 && !isSelected) return 0.4;

@@ -45,6 +45,10 @@ import { NgClass } from '@angular/common';
 import { MapType } from '../../models/map-type';
 import { FlightStatus } from '../../models/flight-status';
 import { DetailViewMobileComponent } from '../detail-view-mobile/detail-view-mobile.component';
+import {
+  MapBarogramSyncService,
+  MarkerLocationUpdate,
+} from '../../services/map-barogram-sync.service';
 
 @Component({
   selector: 'app-map',
@@ -59,6 +63,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly gliderMarkerService = inject(GliderMarkerService);
+  private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
 
   // Public properties
   selectedAircraft = this.store.selectedAircraft;
@@ -138,12 +143,22 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.initializeMap();
     this.initiallyLoadData();
 
+    // Select aircraft if flarmId is set in query params
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const flarmId = params.get('flarmId');
       if (flarmId && this.selectedAircraft() !== flarmId) {
         this.store.loadAndSetMapTarget(flarmId);
       }
     });
+
+    // Sync marker on map with selected timestamp in barogram
+    this.mapBarogramSyncService.markerLocationUpdateRequested
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((markerLocationUpdate) => {
+        markerLocationUpdate
+          ? this.drawMarkerOnFlightPath(markerLocationUpdate)
+          : this.flightPathMarkerLayer.getSource()?.clear();
+      });
   }
 
   ngAfterViewInit(): void {
@@ -397,30 +412,24 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private initiallyLoadData() {
-    //document.fonts.load('bold 26px Roboto').then(() => {
     this.loadFlightsWithFilter(this.settings());
     this.setupTimerForGliderPositionUpdates();
-    //});
   }
 
-  // private drawMarkerOnFlightPath(markerLocationUpdate: MarkerLocationUpdate) {
-  //     this.flightPathMarkerLayer.getSource()?.clear();
-  //     if (!markerLocationUpdate) return;
+  private drawMarkerOnFlightPath(markerLocationUpdate: MarkerLocationUpdate) {
+    this.flightPathMarkerLayer.getSource()?.clear();
+    if (!markerLocationUpdate) return;
 
-  //     const marker = new Feature({
-  //         geometry: new Point(fromLonLat([markerLocationUpdate.longitude, markerLocationUpdate.latitude]))
-  //     });
-  //     marker.setStyle(new Style({
-  //         image: new Icon({
-  //             anchor: [0.5, 0.5],
-  //             src: 'assets/glider.png',
-  //             rotateWithView: false,
-  //             rotation: markerLocationUpdate.rotation * (Math.PI / 180),
-  //             scale: 0.15
-  //         })
-  //     }));
-  //     this.flightPathMarkerLayer.getSource()?.addFeature(marker);
-  // }
+    const marker = new Feature({
+      geometry: new Point(
+        fromLonLat([markerLocationUpdate.longitude, markerLocationUpdate.latitude]),
+      ),
+    });
+    marker.setStyle(
+      this.gliderMarkerService.getFlightPathPositionMarkerStyle(markerLocationUpdate.rotation),
+    );
+    this.flightPathMarkerLayer.getSource()?.addFeature(marker);
+  }
 
   // Adapt map zoom and center to perfectly fit flight path
   private fitMapToFlightPath(history: HistoryEntry[]): void {

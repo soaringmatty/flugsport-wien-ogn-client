@@ -1,15 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal,
-  computed,
-  effect,
-  ViewChild,
-  AfterViewInit,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, inject, Signal, computed, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
 import {
   ApexAxisChartSeries,
@@ -22,8 +11,8 @@ import {
 } from 'ng-apexcharts';
 import { OgnStore } from '../../store/ogn.store';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
 import { HistoryEntry } from '../../models/history-entry.model';
+import { MapBarogramSyncService } from '../../services/map-barogram-sync.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -43,13 +32,14 @@ export type ChartOptions = {
   templateUrl: './barogram.component.html',
   styleUrl: './barogram.component.scss',
 })
-export class BarogramComponent {
+export class BarogramComponent implements OnInit, OnDestroy {
   //private subscription: Subscription | undefined;
   @ViewChild('chartRef') chartRef!: ChartComponent;
-  private previousDataLength = 0;
-  private lastHoveredIndex = 0;
+  private tooltipVisible = false;
+  private tooltipPollInterval: any;
 
   private readonly store = inject(OgnStore);
+  private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
   flightHistory = this.store.flightHistory;
 
   chartOptions: Signal<ChartOptions> = computed(() => {
@@ -71,6 +61,11 @@ export class BarogramComponent {
         animations: { enabled: false },
         zoom: { enabled: false },
         toolbar: { show: false },
+        events: {
+          mouseLeave: () => {
+            this.mapBarogramSyncService.markerLocationUpdateRequested.emit();
+          },
+        },
       },
       stroke: {
         curve: 'smooth',
@@ -111,6 +106,19 @@ export class BarogramComponent {
         },
         custom: ({ dataPointIndex, w }) => {
           const entry: HistoryEntry = w.globals.initialSeries[0].data[dataPointIndex].meta;
+
+          const data = w.globals.initialSeries[0].data;
+          const current = data[dataPointIndex]?.meta;
+          const prev = data[dataPointIndex - 1]?.meta;
+          const next = data[dataPointIndex + 1]?.meta;
+          const rotation = this.mapBarogramSyncService.calculateRotation(current, prev, next);
+          this.tooltipVisible = true;
+          this.mapBarogramSyncService.markerLocationUpdateRequested.emit({
+            latitude: entry.latitude,
+            longitude: entry.longitude,
+            rotation,
+          });
+
           return `
             <div class="p-2 text-xs">
               <strong>${new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong><br/>
@@ -123,4 +131,24 @@ export class BarogramComponent {
       },
     };
   });
+
+  startTooltipWatcher() {
+    this.tooltipPollInterval = setInterval(() => {
+      const tooltip = document.querySelector('.apexcharts-tooltip');
+      const visible = tooltip && tooltip.classList.contains('apexcharts-active');
+
+      if (!visible && this.tooltipVisible) {
+        this.tooltipVisible = false;
+        this.mapBarogramSyncService.markerLocationUpdateRequested.emit();
+      }
+    }, 50);
+  }
+
+  ngOnInit(): void {
+    this.startTooltipWatcher();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.tooltipPollInterval);
+  }
 }
