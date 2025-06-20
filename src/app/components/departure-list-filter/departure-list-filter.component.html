@@ -107,11 +107,12 @@
         Zurücksetzen
       </button>
       <button
-        class="flex-1 py-3 rounded-xl text-sm font-medium transition active:bg-blue-700"
+        class="flex-1 py-3 rounded-xl text-sm font-medium transition"
         [class.bg-blue-600]="!isApplyDisabled()"
         [class.text-white]="!isApplyDisabled()"
         [class.bg-gray-300]="isApplyDisabled()"
         [class.text-gray-500]="isApplyDisabled()"
+        [ngClass]="{ 'active:bg-blue-700': !isApplyDisabled() }"
         [disabled]="isApplyDisabled()"
         (click)="apply()"
       >

@@ -51,7 +51,7 @@
       <div
         class="flex flex-col items-center gap-0.5"
         [ngClass]="{
-          'green-icon': !flight()?.landingTimestamp,
+          'text-blue-600 pulsating': !flight()?.landingTimestamp,
           'text-gray-800': flight()?.landingTimestamp,
         }"
       >

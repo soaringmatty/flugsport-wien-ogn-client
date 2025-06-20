@@ -9,7 +9,6 @@ export interface MapSettings {
   hideUnregisteredAircraft: boolean;
   hideGlidersOnGround: boolean;
   mapType: MapType;
-  useFlightPathSmoothing: boolean;
   onlyShowLastFlight: boolean;
   gliderFilterInLists: GliderFilter;
   showChangelogForNewVersion: boolean;

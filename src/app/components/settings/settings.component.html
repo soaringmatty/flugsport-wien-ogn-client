@@ -85,6 +85,18 @@
     <app-toggle [(value)]="settings().hideGlidersOnGround" (change)="save()" />
   </div>
 
+  <!-- SECTION: Bodenfilter als Switch -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-blue-600">airline_stops</span>
+      <div>
+        <div class="text-sm">Nur aktuellen Flug anzeigen</div>
+        <div class="text-xs text-gray-400">Statt den gesamten Flugpfad</div>
+      </div>
+    </div>
+    <app-toggle [(value)]="settings().onlyShowLastFlight" (change)="save()" />
+  </div>
+
   <!-- SECTION: Unregistrierte LFZ als Switch -->
   <!-- <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center">
     <div class="flex items-center gap-3">

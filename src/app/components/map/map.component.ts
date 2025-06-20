@@ -49,6 +49,7 @@ import {
   MapBarogramSyncService,
   MarkerLocationUpdate,
 } from '../../services/map-barogram-sync.service';
+import { FlightAnalysationService } from '../../services/flight-analysation.service';
 
 @Component({
   selector: 'app-map',
@@ -64,6 +65,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly gliderMarkerService = inject(GliderMarkerService);
   private readonly mapBarogramSyncService = inject(MapBarogramSyncService);
+  private readonly flightAnalysationService = inject(FlightAnalysationService);
 
   // Public properties
   selectedAircraft = this.store.selectedAircraft;
@@ -135,6 +137,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.foreignGlidersLayer.getSource()?.clear();
       untracked(() => {
         this.loadFlightsWithFilter(settings);
+        if (this.selectedAircraft()) {
+          this.store.loadFlightHistory(this.selectedAircraft() as string);
+        }
       });
     });
   }
@@ -447,22 +452,14 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private drawFlightPathFromHistory(historyEntries: HistoryEntry[]) {
-    const settings = this.settings();
-    // const entries = settings.onlyShowLastFlight
-    //     ? this.flightAnalysationService.getHistorySinceLastTakeoff(historyEntries)
-    //     : historyEntries;
-    const entries = historyEntries;
     if (!historyEntries || !historyEntries?.length) {
       return;
     }
-
-    const coords = entries.map((e) => fromLonLat([e.longitude, e.latitude]));
+    const coords = historyEntries.map((e) => fromLonLat([e.longitude, e.latitude]));
     let geometry = new LineString(coords);
 
-    if (settings.useFlightPathSmoothing) {
-      const smooth = chaikinsAlgorithm(coords);
-      if (smooth.length) geometry = new LineString(smooth);
-    }
+    const smooth = chaikinsAlgorithm(coords);
+    if (smooth.length) geometry = new LineString(smooth);
 
     const outer = new Feature(geometry);
     const inner = new Feature(geometry);

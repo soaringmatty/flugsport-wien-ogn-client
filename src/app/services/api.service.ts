@@ -55,7 +55,7 @@ export class ApiService {
     if (endTimestamp) {
       params = params.append('endTimestamp', endTimestamp);
     }
-    const response = await firstValueFrom(this.http.get<number[][]>(url, { params }));
+    const response = await firstValueFrom(this.http.get<any[][]>(url, { params }));
     return response.map(([timestamp, lat, lng, alt, speed, vario]) => ({
       timestamp,
       latitude: lat,

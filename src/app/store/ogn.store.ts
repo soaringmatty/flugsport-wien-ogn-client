@@ -19,6 +19,7 @@ import { FlightStatus } from '../models/flight-status';
 import { GliderType } from '../models/glider-type';
 import { AircraftType } from '../models/aircraft-type';
 import { DepartureListFilter } from '../models/departure-list-filter.model';
+import { FlightAnalysationService } from '../services/flight-analysation.service';
 
 type OgnState = {
   flights: Flight[];
@@ -55,6 +56,7 @@ export const OgnStore = signalStore(
     const apiService = inject(ApiService);
     const settingsService = inject(SettingsService);
     const notificationService = inject(NotificationService);
+    const flightAnalysationService = inject(FlightAnalysationService);
 
     return {
       loadFlights: async (
@@ -125,9 +127,12 @@ export const OgnStore = signalStore(
       ) => {
         try {
           const history = await apiService.getFlightHistory(flarmId, startTimestamp, endTimestamp);
+          const filteredHistory = state.settings.onlyShowLastFlight()
+            ? flightAnalysationService.getHistorySinceLastTakeoff(history)
+            : history;
           patchState(state, (current) => ({
             ...current,
-            flightHistory: history,
+            flightHistory: filteredHistory,
           }));
         } catch (error) {
           notificationService.notify({

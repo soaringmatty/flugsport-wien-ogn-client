@@ -1,16 +1,26 @@
-@keyframes greenPulse {
+@keyframes pulsating {
   0% {
-    color: #16a34a; // Tailwind: green-600
+    //color: #16a34a; // Tailwind: green-600
+    opacity: 1;
+    //scale: 1;
   }
   50% {
-    color: #20bd5a;
+    //color: #20bd5a;
+    opacity: 0.75;
+    //scale: 0.95;
   }
   100% {
-    color: #16a34a;
+    //color: #16a34a;
+    opacity: 1;
+    //scale: 1;
   }
 }
 
 .green-icon {
   //animation: greenPulse 3s infinite;
   color: #16a34a;
+}
+
+.pulsating {
+  animation: pulsating 2.5s ease-in-out infinite;
 }
