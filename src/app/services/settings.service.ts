@@ -5,6 +5,7 @@ import { MapType } from '../models/map-type';
 import config from '../../../package.json';
 import { MarkerColorScheme } from '../models/marker-color-scheme';
 import { GliderFilter } from '../models/glider-filter';
+import { DepartureListFilter } from '../models/departure-list-filter.model';
 
 export const defaultSettings: MapSettings = {
   version: config.version,
@@ -19,7 +20,17 @@ export const defaultSettings: MapSettings = {
   markerColorScheme: MarkerColorScheme.highlightKnownGliders,
   useUtcTimeInDepartureList: true,
   reduceDataUsage: false,
-  useNewDepartureList: false,
+};
+
+export const defaultDepartureListFilter: DepartureListFilter = {
+  knownGlidersOnly: false,
+  includeLaunchTypeWinch: true,
+  includeLaunchTypeAerotow: true,
+  includeLaunchTypeMotorized: true,
+  includeLaunchTypeUnknown: true,
+  flarmId: null,
+  towPlaneFlarmId: null,
+  utcTimestamps: true,
 };
 
 export function getRefreshTimeout(reduceDataUsage: boolean): number {
@@ -31,26 +42,43 @@ export function getRefreshTimeout(reduceDataUsage: boolean): number {
 })
 export class SettingsService {
   private readonly settingsKey = 'ogn_config';
+  private readonly departureListFilterKey = 'departure_list_filter';
 
   isNewVersion = false;
 
   loadSettings(): MapSettings {
     const raw = localStorage.getItem(this.settingsKey);
-    if (!raw) return this.saveSettings(defaultSettings);
+    if (!raw) {
+      this.saveSettings(defaultSettings);
+      return defaultSettings;
+    }
 
     const parsed = JSON.parse(raw);
     if (parsed.version !== config.version) {
       this.isNewVersion = true;
       const migrated = this.migrate(parsed);
-      return this.saveSettings(migrated);
+      this.saveSettings(migrated);
+      return migrated;
     }
 
     return parsed;
   }
 
-  saveSettings(settings: MapSettings): MapSettings {
+  saveSettings(settings: MapSettings): void {
     localStorage.setItem(this.settingsKey, JSON.stringify(settings));
-    return settings;
+  }
+
+  loadDepartureListFilter(): DepartureListFilter {
+    const raw = localStorage.getItem(this.departureListFilterKey);
+    if (!raw) {
+      this.saveDepartureListFilter(defaultDepartureListFilter);
+      return defaultDepartureListFilter;
+    }
+    return JSON.parse(raw);
+  }
+
+  saveDepartureListFilter(filter: DepartureListFilter): void {
+    localStorage.setItem(this.departureListFilterKey, JSON.stringify(filter));
   }
 
   private migrate(oldSettings: any): MapSettings {

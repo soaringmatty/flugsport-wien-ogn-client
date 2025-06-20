@@ -7,13 +7,18 @@ import { NotificationService } from '../services/notification.service';
 import { ApiService } from '../services/api.service';
 import { NotificationType } from '../models/notification-type';
 import { messages } from '../constants/messages';
-import { defaultSettings, SettingsService } from '../services/settings.service';
+import {
+  defaultDepartureListFilter,
+  defaultSettings,
+  SettingsService,
+} from '../services/settings.service';
 import { DepartureListItem } from '../models/departure-list-item.model';
 import { SearchResultItem } from '../models/search-result-item.model';
 import { MapTarget } from '../models/map-target.model';
 import { FlightStatus } from '../models/flight-status';
 import { GliderType } from '../models/glider-type';
 import { AircraftType } from '../models/aircraft-type';
+import { DepartureListFilter } from '../models/departure-list-filter.model';
 
 type OgnState = {
   flights: Flight[];
@@ -22,6 +27,7 @@ type OgnState = {
   flightHistory: HistoryEntry[];
   settings: MapSettings;
   departureList: DepartureListItem[];
+  departureListFilter: DepartureListFilter;
   searchText: string;
   searchResult: SearchResultItem[];
   mapTarget: MapTarget | null;
@@ -35,6 +41,7 @@ const initialState: OgnState = {
   flightHistory: [],
   settings: defaultSettings,
   departureList: [],
+  departureListFilter: defaultDepartureListFilter,
   searchText: '',
   searchResult: [],
   mapTarget: null,
@@ -173,12 +180,25 @@ export const OgnStore = signalStore(
         }));
       },
 
-      loadDepartureList: async (knownGlidersOnly: boolean) => {
+      saveDepartureListFilter: (departureListFilter: DepartureListFilter) => {
+        settingsService.saveDepartureListFilter(departureListFilter);
+        patchState(state, (current) => ({
+          ...current,
+          departureListFilter,
+        }));
+      },
+
+      loadDepartureListFilter: () => {
+        const loaded = settingsService.loadDepartureListFilter();
+        patchState(state, (current) => ({
+          ...current,
+          departureListFilter: loaded,
+        }));
+      },
+
+      loadDepartureList: async () => {
         try {
-          const departureList = await apiService.getDepartureList(
-            knownGlidersOnly,
-            state.settings().useNewDepartureList,
-          );
+          const departureList = await apiService.getDepartureList(state.departureListFilter());
           patchState(state, (current) => ({
             ...current,
             departureList,

@@ -16,5 +16,4 @@ export interface MapSettings {
   markerColorScheme: MarkerColorScheme;
   useUtcTimeInDepartureList: boolean;
   reduceDataUsage: boolean;
-  useNewDepartureList: boolean;
 }

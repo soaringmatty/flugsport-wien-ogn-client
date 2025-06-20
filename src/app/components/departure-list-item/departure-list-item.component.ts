@@ -12,6 +12,7 @@ import { LaunchType } from '../../models/launch-type';
 })
 export class DepartureListItemComponent {
   flight = input<DepartureListItem>();
+  utc = input(true);
 
   formatTimestamp(timestamp?: number): string {
     if (!timestamp) return '';

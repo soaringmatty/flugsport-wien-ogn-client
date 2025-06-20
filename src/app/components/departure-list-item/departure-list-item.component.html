@@ -26,7 +26,7 @@
         <span class="material-symbols-outlined text-base">flight_takeoff</span>
         @if (flight()?.departureTimestamp) {
           <span class="font-medium">
-            {{ flight()?.departureTimestamp | date: 'HH:mm' }}
+            {{ flight()?.departureTimestamp | date: 'HH:mm' : (utc() ? 'utc' : '') }}
           </span>
         } @else {
           <span class="font-medium">–</span>
@@ -39,7 +39,7 @@
         <span class="material-symbols-outlined text-base">flight_land</span>
         @if (flight()?.landingTimestamp) {
           <span class="font-medium">
-            {{ flight()?.landingTimestamp | date: 'HH:mm' }}
+            {{ flight()?.landingTimestamp | date: 'HH:mm' : (utc() ? 'utc' : '') }}
           </span>
         } @else {
           <span class="font-medium">–</span>

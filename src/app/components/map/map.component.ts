@@ -220,7 +220,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       maxLng,
       minLng,
       this.selectedAircraft() as string,
-      settings.gliderFilterOnMap !== GliderFilter.allAirplanes,
+      settings.gliderFilterOnMap === GliderFilter.allGliders,
       settings.gliderFilterOnMap === GliderFilter.clubAndprivate,
     );
   }

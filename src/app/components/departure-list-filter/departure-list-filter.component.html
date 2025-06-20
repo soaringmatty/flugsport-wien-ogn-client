@@ -1,0 +1,122 @@
+<div class="fixed inset-0 bg-black/40 z-50">
+  <div
+    class="absolute bottom-0 w-full bg-gray-50 rounded-t-2xl p-4 max-h-[90vh] overflow-y-auto shadow-xl"
+  >
+    <!-- Title -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-base font-semibold text-gray-800">Startliste Einstellungen</h2>
+      <button class="text-gray-500" (click)="closeDialog()">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <!-- Launch Types -->
+    <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-blue-600">flight_takeoff</span>
+        <h3 class="text-base font-semibold">Startarten</h3>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <label
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-gray-50"
+          [ngClass]="{
+            'border-blue-600': filter().includeLaunchTypeWinch,
+            'border-gray-200': !filter().includeLaunchTypeWinch,
+          }"
+        >
+          <input
+            type="checkbox"
+            [checked]="filter().includeLaunchTypeWinch"
+            (change)="toggleLaunchType(1)"
+            class="accent-blue-600 w-4 h-4"
+          />
+          <span class="text-sm">Windenstart</span>
+        </label>
+        <label
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-gray-50"
+          [ngClass]="{
+            'border-blue-600': filter().includeLaunchTypeAerotow,
+            'border-gray-200': !filter().includeLaunchTypeAerotow,
+          }"
+        >
+          <input
+            type="checkbox"
+            [checked]="filter().includeLaunchTypeAerotow"
+            (change)="toggleLaunchType(2)"
+            class="accent-blue-600 w-4 h-4"
+          />
+          <span class="text-sm">F-Schlepp</span>
+        </label>
+        <label
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-gray-50"
+          [ngClass]="{
+            'border-blue-600': filter().includeLaunchTypeMotorized,
+            'border-gray-200': !filter().includeLaunchTypeMotorized,
+          }"
+        >
+          <input
+            type="checkbox"
+            [checked]="filter().includeLaunchTypeMotorized"
+            (change)="toggleLaunchType(3)"
+            class="accent-blue-600 w-4 h-4"
+          />
+          <span class="text-sm">Eigenstart</span>
+        </label>
+        <label
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-gray-50"
+          [ngClass]="{
+            'border-blue-600': filter().includeLaunchTypeUnknown,
+            'border-gray-200': !filter().includeLaunchTypeUnknown,
+          }"
+        >
+          <input
+            type="checkbox"
+            [checked]="filter().includeLaunchTypeUnknown"
+            (change)="toggleLaunchType(0)"
+            class="accent-blue-600 w-4 h-4"
+          />
+          <span class="text-sm">Unbekannt</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Known Gliders Only -->
+    <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center mb-4">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-blue-600">groups</span>
+        <span class="text-sm">Nur Vereinsflugzeuge</span>
+      </div>
+      <app-toggle [value]="filter().knownGlidersOnly" (change)="toggleKnownOnly()" />
+    </div>
+
+    <!-- UTC Timestamps -->
+    <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center mb-4">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-blue-600">schedule</span>
+        <span class="text-sm">Uhrzeiten in UTC</span>
+      </div>
+      <app-toggle [value]="filter().utcTimestamps" (change)="toggleUTC()" />
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-4 mt-4">
+      <button
+        class="flex-1 py-3 rounded-xl bg-gray-200 text-sm font-medium active:bg-gray-300"
+        (click)="reset()"
+      >
+        Zurücksetzen
+      </button>
+      <button
+        class="flex-1 py-3 rounded-xl text-sm font-medium transition active:bg-blue-700"
+        [class.bg-blue-600]="!isApplyDisabled()"
+        [class.text-white]="!isApplyDisabled()"
+        [class.bg-gray-300]="isApplyDisabled()"
+        [class.text-gray-500]="isApplyDisabled()"
+        [disabled]="isApplyDisabled()"
+        (click)="apply()"
+      >
+        Anwenden
+      </button>
+    </div>
+  </div>
+</div>

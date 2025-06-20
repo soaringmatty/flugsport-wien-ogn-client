@@ -27,24 +27,23 @@
         <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">Open Steet Map</div>
       </button>
 
-      <!-- Stamen -->
+      <!-- STAMEN -->
       <button
         type="button"
-        class="rounded-xl overflow-hidden transition focus:outline-none"
+        class="rounded-xl overflow-hidden transition focus:outline-none opacity-80 cursor-not-allowed"
         [ngClass]="{
-          'ring-2 ring-blue-600': settings().mapType === MapType.stamen,
-          'ring-1 ring-gray-300': settings().mapType !== MapType.stamen,
+          'ring-1 ring-gray-300': true,
         }"
-        (click)="setMapType(MapType.stamen)"
+        disabled
       >
-        <div class="aspect-video overflow-hidden">
+        <div class="aspect-video overflow-hidden grayscale">
           <img
             src="assets/maps/stamen.png"
             alt="Stamen Gelände"
-            class="object-cover w-full h-full transition group-hover:scale-105"
+            class="object-cover w-full h-full"
           />
         </div>
-        <div class="px-3 py-2 text-center text-sm font-medium text-gray-800">Stamen (Gelände)</div>
+        <div class="px-3 py-2 text-center text-sm font-medium text-gray-500">Stamen (Gelände)</div>
       </button>
     </div>
   </div>
@@ -87,13 +86,13 @@
   </div>
 
   <!-- SECTION: Unregistrierte LFZ als Switch -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center">
+  <!-- <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <span class="material-symbols-outlined text-blue-600">shield_question</span>
       <span class="text-sm">Nicht registrierte Flugzeuge ausblenden [TODO]</span>
     </div>
     <app-toggle [(value)]="settings().hideUnregisteredAircraft" (change)="save()" />
-  </div>
+  </div> -->
 
   <!-- SECTION: Farbschema -->
   <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3">
@@ -113,7 +112,7 @@
   </div>
 
   <!-- SECTION: Entwickler -->
-  <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3">
+  <!-- <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3">
     <div class="flex items-center gap-2">
       <span class="material-symbols-outlined text-blue-600">terminal</span>
       <h2 class="text-base font-semibold">Entwickler</h2>
@@ -122,5 +121,5 @@
       <span class="text-sm">Neue Startliste</span>
       <app-toggle [(value)]="settings().useNewDepartureList" (change)="save()" />
     </div>
-  </div>
+  </div> -->
 </div>

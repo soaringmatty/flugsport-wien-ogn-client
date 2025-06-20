@@ -6,6 +6,7 @@ import { api } from '../../environments/api';
 import { HistoryEntry } from '../models/history-entry.model';
 import { DepartureListItem } from '../models/departure-list-item.model';
 import { SearchResultItem } from '../models/search-result-item.model';
+import { DepartureListFilter } from '../models/departure-list-filter.model';
 
 @Injectable({
   providedIn: 'root',
@@ -71,13 +72,30 @@ export class ApiService {
     return response;
   }
 
-  async getDepartureList(
-    knownGlidersOnly: boolean,
-    useNewDepartureList: boolean,
-  ): Promise<DepartureListItem[]> {
-    const apiUrl = useNewDepartureList ? api.getDepartureList : api.getDepartureListGlidernet;
-    const url = apiUrl.replace('{0}', knownGlidersOnly.toString());
-    const request = this.http.get<DepartureListItem[]>(url);
+  async getDepartureList(filter: DepartureListFilter): Promise<DepartureListItem[]> {
+    let params = new HttpParams();
+    if (filter.knownGlidersOnly) {
+      params = params.set('knownGlidersOnly', 'true');
+    }
+    if (!filter.includeLaunchTypeWinch) {
+      params = params.set('includeLaunchTypeWinch', 'false');
+    }
+    if (!filter.includeLaunchTypeAerotow) {
+      params = params.set('includeLaunchTypeAerotow', 'false');
+    }
+    if (!filter.includeLaunchTypeMotorized) {
+      params = params.set('includeLaunchTypeMotorized', 'false');
+    }
+    if (!filter.includeLaunchTypeUnknown) {
+      params = params.set('includeLaunchTypeUnknown', 'false');
+    }
+    if (filter.flarmId) {
+      params = params.set('flarmId', filter.flarmId);
+    }
+    if (filter.towPlaneFlarmId) {
+      params = params.set('towPlaneFlarmId', filter.towPlaneFlarmId);
+    }
+    const request = this.http.get<DepartureListItem[]>(api.getDepartureList, { params });
     return await firstValueFrom(request);
   }
 

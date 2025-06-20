@@ -1,44 +1,59 @@
-@if (departureList().length > 0) {
-  <div class="bg-gray-50 min-h-full">
-    <!-- Top-Row -->
-    <div>
-      <div
-        class="flex items-center justify-between bg-white px-4 py-4 mb-4 drop-shadow-sm text-base text-gray-800"
-      >
-        <!-- Amount and filter status -->
-        <div class="flex items-center gap-2">
-          <span class="font-medium">
-            {{ filteredList().length }} {{ filteredList().length === 1 ? 'Flug' : 'Flüge' }} erkannt
-          </span>
-          @if (isListFiltered()) {
-            <span class="text-blue-600 font-medium text-xs bg-blue-50 px-2 py-0.5 rounded-full">
-              Gefiltert
-            </span>
-          }
-        </div>
-
-        <!-- Reset filter -->
-        @if (filteredFlarmId()) {
-          <button
-            class="flex items-center gap-1 text-blue-600 font-medium transition"
-            (click)="filteredFlarmId.set(null)"
-          >
-            <span class="material-symbols-outlined text-lg">filter_alt_off</span>
-            <span class="text-xs">Filter zurücksetzen</span>
-          </button>
-        }
+<div class="bg-gray-50 min-h-full">
+  <!-- Top-Row: + Filter Icon rechts -->
+  <div class="sticky top-0 z-10 bg-white px-4 py-4 mb-4 drop-shadow-sm text-base text-gray-800">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-lg">{{ departureList().length }} Flüge gefunden</span>
       </div>
-    </div>
 
+      <!-- Filter öffnen -->
+      <button
+        class="text-gray-500 p-2 w-8 h-8 flex justify-center items-center rounded-full"
+        (click)="showFilter.set(true)"
+      >
+        <span class="material-symbols-outlined">filter_list</span>
+      </button>
+    </div>
+    <!-- Aktive Filter -->
+    <div class="flex flex-wrap gap-2 mt-2">
+      @for (tag of filterTags(); track tag.label) {
+        <div>
+          <div
+            class="flex items-center text-xs font-medium py-1 rounded-full gap-1"
+            [ngClass]="{
+              'bg-blue-50 text-blue-600': tag.active,
+              'bg-gray-100 text-gray-600': !tag.active,
+              'px-2': !tag.showClearButton,
+              'pl-2 pr-1': tag.showClearButton,
+            }"
+          >
+            <span>{{ tag.label }}</span>
+
+            @if (tag.showClearButton) {
+              <button
+                type="button"
+                class="rounded-full active:bg-blue-100 transition flex items-center justify-center w-4 h-4"
+                (click)="filterForAircraft(null)"
+              >
+                <span class="material-symbols-outlined text-sm leading-none">close</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (departureList().length > 0) {
     <!-- Departure list -->
     <div class="space-y-3 px-4 pb-4">
-      <div *ngFor="let listItem of filteredList(); let i = index">
+      <div *ngFor="let listItem of departureList(); let i = index">
         <div
           class="rounded-2xl shadow-sm bg-white px-4 py-3 transition-all duration-300 cursor-pointer"
           (click)="toggleExpanded(i)"
           [class.pb-6]="expandedItemIndex() === i"
         >
-          <app-departure-list-item [flight]="listItem" />
+          <app-departure-list-item [flight]="listItem" [utc]="filter().utcTimestamps" />
 
           <div
             class="overflow-hidden transition-all duration-300"
@@ -65,9 +80,17 @@
         </div>
       </div>
     </div>
-  </div>
-} @else {
-  <div class="flex justify-center items-center h-full font-semibold text-lg">
-    Heute noch keine Starts
-  </div>
+  } @else {
+    <div class="flex justify-center text-center items-center h-full font-medium text-base">
+      <div>
+        <div class="pt-8">Heute noch keine Starts mit</div>
+        <div>dem aktuellen Filter</div>
+      </div>
+      <!-- <div>mit dem aktuellen Filter</div> -->
+    </div>
+  }
+</div>
+
+@if (showFilter()) {
+  <app-departure-list-filter (close)="showFilter.set(false)" />
 }
