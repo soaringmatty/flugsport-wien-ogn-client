@@ -127,9 +127,12 @@ export const OgnStore = signalStore(
       ) => {
         try {
           const history = await apiService.getFlightHistory(flarmId, startTimestamp, endTimestamp);
-          const filteredHistory = state.settings.onlyShowLastFlight()
+          let filteredHistory = state.settings.onlyShowLastFlight()
             ? flightAnalysationService.getHistorySinceLastTakeoff(history)
             : history;
+          filteredHistory = state.settings.flightPathExcludeFaultySignals()
+            ? flightAnalysationService.removeOutliers(filteredHistory)
+            : filteredHistory;
           patchState(state, (current) => ({
             ...current,
             flightHistory: filteredHistory,

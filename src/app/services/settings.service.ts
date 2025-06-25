@@ -19,6 +19,7 @@ export const defaultSettings: MapSettings = {
   markerColorScheme: MarkerColorScheme.highlightKnownGliders,
   useUtcTimeInDepartureList: true,
   reduceDataUsage: false,
+  flightPathExcludeFaultySignals: true,
 };
 
 export const defaultDepartureListFilter: DepartureListFilter = {
